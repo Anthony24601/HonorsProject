@@ -1,0 +1,748 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Loss &#8212; My sample book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'loss';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Gradient Calculations: Finite Differences" href="finite_gradient.html" />
+    <link rel="prev" title="Interpolation and Regularizers" href="interpolation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to your Jupyter Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="interpolation.html">Interpolation and Regularizers</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Floss.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/loss.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Loss</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-term-calculation">Data Term calculation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#furthermore-into-the-data">Furthermore into the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-one-gain">Method One: Gain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-cosher-phase">Method Two: Cosher Phase</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-function">Testing the function</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">run</span> ./utility.ipynb
+</pre></div>
+</div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="loss">
+<h1>Loss<a class="headerlink" href="#loss" title="Permalink to this heading">#</a></h1>
+<p>The Loss function is trying to compare the data with the image and see if they agree with each other.</p>
+<p>Let <span class="math notranslate nohighlight">\(I(x,y)\)</span> be the image and we transform it into <span class="math notranslate nohighlight">\(\hat{I} (x,y)\)</span> by using fourier transfroms described in the the interpolate section of the previous notebook.</p>
+<p>Next we compare each interpolated point with its data term counterpart and get the equation for loss to be:</p>
+<div class="math notranslate nohighlight">
+\[J = \sum(\frac{|\hat{I} - D|^2}{\sigma^2})\]</div>
+<p><span class="math notranslate nohighlight">\(\sigma\)</span> here is the error for each data point.</p>
+<p>Finally, we add the regularizer to the loss using the method in the previous notebook.</p>
+<section id="data-term-calculation">
+<h2>Data Term calculation<a class="headerlink" href="#data-term-calculation" title="Permalink to this heading">#</a></h2>
+<p>We have above that <span class="math notranslate nohighlight">\(\hat{I}\)</span> is in the Fourier Domain. In order to compute the data term, we calculate the term as <span class="math notranslate nohighlight">\(D = \text{Amp} * e^{i*\text{phase}}\)</span>.</p>
+<p>It is important to note that the phase in Z is in radians, not degrees</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">reg_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
+    <span class="n">error_sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
+        <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">phase</span><span class="p">))</span>
+        <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">vis_image</span><span class="o">-</span><span class="n">vis_data</span><span class="p">)</span> <span class="o">/</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">error_sum</span> <span class="o">+=</span> <span class="n">error</span>
+    
+    <span class="k">return</span> <span class="n">error_sum</span> <span class="o">+</span> <span class="n">reg_weight</span> <span class="o">*</span> <span class="n">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="furthermore-into-the-data">
+<h2>Furthermore into the data<a class="headerlink" href="#furthermore-into-the-data" title="Permalink to this heading">#</a></h2>
+<p>What we are doing here is a simplified version of the loss function. In reality, the loss is more complicated due to other factors.</p>
+<p>Because of the method of combining signal data from many telescopes, we get errors that may throw off the data terms.</p>
+<p>How would we change our loss function?</p>
+<section id="method-one-gain">
+<h3>Method One: Gain<a class="headerlink" href="#method-one-gain" title="Permalink to this heading">#</a></h3>
+<p>We add a new function called the Gain which represents the telescoping errors. It is a smooth function in time that has a phase and amplitude. We multiply it with the data term to result in:</p>
+<div class="math notranslate nohighlight">
+\[J = \sum(\frac{|\hat{I} - G D|^2}{\sigma^2})\]</div>
+<p>Now when we try to minimize the image, we are also trying to minimize G.</p>
+</section>
+<section id="method-two-cosher-phase">
+<h3>Method Two: Cosher Phase<a class="headerlink" href="#method-two-cosher-phase" title="Permalink to this heading">#</a></h3>
+<p>The other way is to take into the account the Cosher Phase.</p>
+<p>Using three telescopes we get:</p>
+<div class="math notranslate nohighlight">
+\[ \sum (\frac{|\phi_{1,2} + \phi_{2,3} + \phi_{3,1} - \phi_{\hat{I}}|^2}{\sigma^2})\]</div>
+<p><span class="math notranslate nohighlight">\(\phi_{1,2} + \phi_{2,3} + \phi_{3,1}\)</span> is called the Cosher Phase <span class="math notranslate nohighlight">\(CP\)</span> which is independent of the telescope error and is taken from the data. <span class="math notranslate nohighlight">\(\phi_{\hat{I}}\)</span> is a Cosher Phase computed from the image.</p>
+<p>In practice, these are the two major methods in order to fit the image to the data.</p>
+</section>
+</section>
+<section id="testing-the-function">
+<h2>Testing the function<a class="headerlink" href="#testing-the-function" title="Permalink to this heading">#</a></h2>
+<p>Below we have a image that was generated for testing purposes. Sometimes we want to shift the image in someway so that the loss function can be optimized further. In EHT, they have tested with many variations and come up with the loss being the best with the ring centered in the middle. We will test this claim below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/data.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/09be506f97fad65651b949fb269182d142b16cb4c9f2ecebe9fd3a98f4952fd3.png" src="_images/09be506f97fad65651b949fb269182d142b16cb4c9f2ecebe9fd3a98f4952fd3.png" />
+</div>
+</div>
+<p>Here we generate a coords and data_list list by sampling data from the ring (not the noise around the ring).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">do_sample</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">)))</span>
+        <span class="n">data_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ft_image</span><span class="p">[</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">][</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">do_sample</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">data_list</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((3, 0), (9.345246066663234-12.763088241472762j)),
+ ((1, -4), (19.26638997942068+0.645458355184074j)),
+ ((4, 1), (16.740754111448133+2.309720618467048j)),
+ ((0, 0), (-130.7977532545254+0j)),
+ ((3, 0), (9.345246066663234-12.763088241472762j)),
+ ((4, 2), (-16.213537172215425+2.677957292860941j)),
+ ((-4, -1), (16.740754111448133-2.3097206184670487j)),
+ ((2, -2), (-20.259515490227393+0.5869595357657675j)),
+ ((-3, 0), (9.345246066663236+12.763088241472765j)),
+ ((-4, 0), (-21.092399479624063-7.428119584083979j)),
+ ((3, -2), (18.046523876827386+2.5971752659760368j)),
+ ((3, -2), (18.046523876827386+2.5971752659760368j)),
+ ((-3, -2), (18.59914527451261+7.6023610122723255j)),
+ ((0, 2), (45.25288306329196-3.200855947045237j)),
+ ((2, 4), (-11.797382443780851+1.8726152619466332j)),
+ ((-3, -2), (18.59914527451261+7.6023610122723255j)),
+ ((-3, 4), (10.97997772948687+0.8737280514156963j)),
+ ((-4, 2), (-11.05946261320548+0.4895276507069246j)),
+ ((2, -4), (-11.158564582308404+2.58553536706419j)),
+ ((4, 0), (-21.092399479624063+7.428119584083978j)),
+ ((2, -4), (-11.158564582308404+2.58553536706419j)),
+ ((-3, 0), (9.345246066663236+12.763088241472765j)),
+ ((4, 1), (16.740754111448133+2.309720618467048j)),
+ ((-4, 2), (-11.05946261320548+0.4895276507069246j)),
+ ((1, 3), (-11.35613468978443+3.361553558377294j))]
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is important to note here that the data points in data_list is complex. Since we sampled from the fourier transform, we have no need to calcuate the data term like we do in the loss function above. Below is a altered version of the loss function above.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumption image is 80px by 80px =&gt; 6400 variables</span>
+<span class="k">def</span> <span class="nf">simple_loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">reg_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="c1">#Ask about u.rad</span>
+    <span class="n">error_sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
+        <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">vis_image</span><span class="o">-</span><span class="n">vis_data</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">error_sum</span> <span class="o">+=</span> <span class="n">error</span>
+    
+    <span class="k">return</span> <span class="n">error_sum</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, below we calcuate the loss of the sample image we started with and then shift the image in all directions. Then we plot the array of losses that we obtained.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_losses</span><span class="p">():</span>
+    <span class="n">loss_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)):</span>
+        <span class="n">image_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Right shifts</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+            <span class="n">image_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># Up shifts</span>
+            <span class="n">loss_arr</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simple_loss</span><span class="p">(</span><span class="n">image_2</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">reg_weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Note here for why we shift</span>
+    <span class="n">loss_arr1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss_arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr1</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">loss_arr2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss_arr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loss_arr</span> <span class="o">=</span> <span class="n">calculate_losses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ac0e3ec4ed17e6365f3c514fc4b50c4c782435036edb7329ce4423b7fe126bc9.png" src="_images/ac0e3ec4ed17e6365f3c514fc4b50c4c782435036edb7329ce4423b7fe126bc9.png" />
+</div>
+</div>
+<p>The dark spots in this picture are low points while the yellow spots are high points. Here we see that there are a few spots where the image produces low loss. If ran again, we will get differing behaviors</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">do_sample</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">loss_arr</span> <span class="o">=</span> <span class="n">calculate_losses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/0690ec2331a658d0b67fbe8dfd12b689c4a77d197453822eb4d97429524d03b8.png" src="_images/0690ec2331a658d0b67fbe8dfd12b689c4a77d197453822eb4d97429524d03b8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">do_sample</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">loss_arr</span> <span class="o">=</span> <span class="n">calculate_losses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/cfa3b61e93225560bce871e78e23a5e09af6847eb65a3d21ec9b2dd9636920d3.png" src="_images/cfa3b61e93225560bce871e78e23a5e09af6847eb65a3d21ec9b2dd9636920d3.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">do_sample</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">loss_arr</span> <span class="o">=</span> <span class="n">calculate_losses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ea5d73a9a456e40d4b75383898865582bc1edcb20b451a927fe2fea33e65c355.png" src="_images/ea5d73a9a456e40d4b75383898865582bc1edcb20b451a927fe2fea33e65c355.png" />
+</div>
+</div>
+<p>In all four of these trials (and other reruns that we test), we generally see dark spots in the centers suggesting that the best area to put the ring is centered in the middle of the image</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="interpolation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Interpolation and Regularizers</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="finite_gradient.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Gradient Calculations: Finite Differences</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-term-calculation">Data Term calculation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#furthermore-into-the-data">Furthermore into the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-one-gain">Method One: Gain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-cosher-phase">Method Two: Cosher Phase</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-function">Testing the function</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

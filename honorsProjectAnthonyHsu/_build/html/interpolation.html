@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Interpolation &#8212; My sample book</title>
+    <title>Interpolation and Regularizers &#8212; My sample book</title>
   
   
   
@@ -62,10 +62,13 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'interpolation';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Notebooks with MyST Markdown" href="markdown-notebooks.html" />
+    <link rel="next" title="Loss" href="loss.html" />
+    <link rel="prev" title="Intro and Setup" href="data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -176,10 +179,13 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="markdown.html">Markdown Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Content with notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="markdown-notebooks.html">Notebooks with MyST Markdown</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup</a></li>
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interpolation and Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
 </ul>
 
     </div>
@@ -352,7 +358,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -363,11 +371,24 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Interpolation</h1>
+    <h1>Interpolation and Regularizers</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background-on-fov-and-k-space">Background on FOV and k-space</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">Interpolation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-stuff-about-cublic-splines-get-permission-first">include stuff about cublic splines? Get permission first</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -377,30 +398,358 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="interpolation">
-<h1>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this heading">#</a></h1>
-<p>In this notebook, we will talk about interpolating coordinate values from an image.</p>
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">run</span> ./utility.ipynb
+</pre></div>
+</div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="interpolation-and-regularizers">
+<h1>Interpolation and Regularizers<a class="headerlink" href="#interpolation-and-regularizers" title="Permalink to this heading">#</a></h1>
+<p>In this notebook, we will talk about interpolating coordinate values from an image as well as calculating the regularizer
+for gradient descent.</p>
+<section id="background-on-fov-and-k-space">
+<h2>Background on FOV and k-space<a class="headerlink" href="#background-on-fov-and-k-space" title="Permalink to this heading">#</a></h2>
+<p>FOV stands for Field of view and it refers to the distance over which an image is acquired or displayed. These images are usually captured by some sort of signal processing like telescopes and MRIs. The FOV and pixel width determine the number of units in the fourier domain that must be obtained in order to reconstruct an image.</p>
+<p>For the sakes of this research and example, FOV<sub>x</sub> = FOV<sub>y</sub> = FOV and <span class="math notranslate nohighlight">\(\Delta x = \Delta y = \Delta w\)</span>. Where w is the pixel width.</p>
+<p>The Fourier projection of spatial frequencies all follow a similar pattern. Instead of regular sine waves, we see complex exponentials
+, cos n <span class="math notranslate nohighlight">\(\omega\)</span> t + i sin n <span class="math notranslate nohighlight">\(\omega\)</span> t. Each pair of samples lines differ by exactly 1 cycle over the FOV. This means that <span class="math notranslate nohighlight">\(\Delta k = k_{n+1} - k_n = \frac{n+1}{FOV}-\frac{n}{FOV} = \frac{1}{FOV}\)</span></p>
+</section>
+<section id="interpolation">
+<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this heading">#</a></h2>
+<p>In this notebook, we have an image that is being linearly transformed using fourier transforms. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into fourier space) and the data obtained by the telescopes (which are in the spectral or fourier domain.)</p>
+<p>When doing this transformation, we obtain a grid of points extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Instead, we must interpolate or estimate the values of the data points using existing known points in our grid.</p>
+<p>Furthermore, in order to translate correctly from image space to fourier space, we need to multiply the grids (kx and ky) by k_FOV. The calculation for this is explained above.</p>
+<p>It is important to note that the more grid points we have, the bigger the image. Thus the size of our Fourier Domain is the Number of pixels of the image by k_FOV. If our FOV is very small, then the width of the fourier grid becomes large.</p>
+<p>Next we want to interpolate the complex value at each coordinate. RegularGridInterpolator however cannot interpolate complex numbers so we interpolate the real and imaginary parts separately and then combined them for the final result.</p>
+<p>Finally, we use a linear method for interpolation due to it’s local interpolation scheme. The other schemes that RegularGridInterpolator offers uses a C^2-smooth split which is a non-local scheme. Since we wanted to optimize the computation time, we chose the linear method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumption image is 80x80 pixels</span>
+<span class="c1"># Pass in array of u,v coords then return array of interpolated values</span>
+<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">    coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">    FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
 
-    <span class="n">kx_1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">FOV</span>
+    <span class="n">k_FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">FOV</span>
 
-    <span class="n">kx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//-</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">//</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">kx_1</span>
-    <span class="n">ky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//-</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">//</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">kx_1</span>
-    
+    <span class="n">kx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k_FOV</span><span class="o">*</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="n">ky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k_FOV</span><span class="o">*</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
     <span class="n">interp_real</span> <span class="o">=</span> <span class="n">RegularGridInterpolator</span><span class="p">((</span><span class="n">kx</span><span class="p">,</span> <span class="n">ky</span><span class="p">),</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
     <span class="n">interp_imag</span> <span class="o">=</span> <span class="n">RegularGridInterpolator</span><span class="p">((</span><span class="n">kx</span><span class="p">,</span> <span class="n">ky</span><span class="p">),</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
 
     <span class="n">real</span> <span class="o">=</span> <span class="n">interp_real</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
     <span class="n">imag</span> <span class="o">=</span> <span class="n">interp_imag</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">real</span> <span class="o">+</span> <span class="n">imag</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>First we take in an image and transform to obtain it’s fourier transform. We do this since the fourier transform tells us what is happening in the image in terms of the frequencies of it’s sinusoides. The data we are using is signal data from the Event Horizon Telescope.</p>
+<p>Here we do some tests using interp_real and interp_imag to verify that they do interpolate a value using a linear scheme. First we start with a very basic 5x5 grid.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">z</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">RegularGridInterpolator</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span><span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expected: 1, Actual:&quot;</span><span class="p">,</span> <span class="n">interp</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expected: 2.5, Actual:&quot;</span><span class="p">,</span> <span class="n">interp</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Expected: 1, Actual: [1.]
+Expected: 2.5, Actual: [2.5]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, here is a test on a fourier transformed image</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/interpolate_test.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 179.5, 179.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png" src="_images/dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+<span class="n">interpolated_points</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">sample</span><span class="p">,[[</span><span class="o">-</span><span class="mf">9.0e+09</span><span class="p">,</span><span class="o">-</span><span class="mf">9.0e+09</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">8.9e+09</span><span class="p">,</span><span class="o">-</span><span class="mf">9.0e+09</span><span class="p">]</span> <span class="p">,[</span><span class="o">-</span><span class="mf">8.95e+09</span><span class="p">,</span><span class="o">-</span><span class="mf">9.0e+09</span><span class="p">]],</span><span class="mi">180</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expected:&quot;</span><span class="p">,</span><span class="n">ft_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Actual:&quot;</span><span class="p">,</span> <span class="n">interpolated_points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Expected:&quot;</span><span class="p">,</span><span class="n">ft_image</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Actual:&quot;</span><span class="p">,</span> <span class="n">interpolated_points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Expected: &quot;</span><span class="p">,(</span><span class="n">ft_image</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ft_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Actual:&quot;</span><span class="p">,</span> <span class="n">interpolated_points</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Expected: (3.0000000019953994-2.1431905139479568e-09j) 
+Actual: (-335133.52213257825+690198.3841637481j)
+
+Expected: (38.20989061676637+0.6177808031820264j) 
+Actual: (-231640.3460875617+376131.9723567965j)
+
+Expected:  (20.604945309380888+0.30889040051941796j) 
+Actual: (-283386.93411007+533165.1782602723j)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Below is an interpolation subroutine written by Misha Stepanov.</p>
+<p>The code provides an insight into a local interpolation scheme using 2D cubic splines. It is local in a sense that only 12 grid points around the point at which we are interpolating is used to contribute the the estimation. The code the interpolation is done with data being wrapped into a 2D torus and the xy-coordinates are supplied assuming that the step of the grid in both the x and y directions are equal to 1</p>
+<section id="include-stuff-about-cublic-splines-get-permission-first">
+<h3>include stuff about cublic splines? Get permission first<a class="headerlink" href="#include-stuff-about-cublic-splines-get-permission-first" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+  <span class="n">cf1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+  <span class="n">cf2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+  <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">cf1</span> <span class="o">+</span> <span class="n">cf2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+  <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cubic12</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>  <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">N</span><span class="p">);</span>  <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]),</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">cubf1</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">cubf1</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span>    <span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m2</span>    <span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span>    <span class="p">,</span> <span class="n">m2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">m1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m2</span>    <span class="p">]</span><span class="o">*</span><span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">F</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="mf">10.</span>
+  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">j</span> <span class="o">/</span> <span class="mf">10.</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
+  <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="mf">1000.</span>
+  <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="mf">2000.</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">cubic12</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10000</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">func</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9.99 4.995 -1.0058598083263428 -1.0062387310745087
+9.991 4.9955 -1.0052755185370548 -1.0056188621460636
+9.992 4.996 -1.004690839850659 -1.0049981027528014
+9.993 4.9965 -1.0041057771382442 -1.0043764531360648
+9.994 4.997 -1.0035203352965503 -1.0037539135379836
+9.995 4.9975 -1.0029345192480468 -1.0031304842014765
+9.996 4.998 -1.002348333941004 -1.002506165370251
+9.997 4.9985 -1.001761784349569 -1.0018809572888083
+9.998 4.999 -1.001174875473833 -1.0012548602024367
+9.999 4.9995 -1.0005876123399073 -1.0006278743572115
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="regularization">
+<h2>Regularization<a class="headerlink" href="#regularization" title="Permalink to this heading">#</a></h2>
+<p>Here we start to calculate regularizers. We do so in order to smooth image and add some bias into the model to prevent it from overfitting the training data. Regularizers allow machine learning models to generalize to new examples that it has not seen during training.</p>
+<p>The regularizer below implements a regularization method called “total squared variation.” This method favors smooth edges and is often used for astronomical image reconstruction.</p>
+<p>The formula for a TSV regularizer is</p>
+<p><span class="math notranslate nohighlight">\(-\sum_l \sum_m[(I_{l+1,m}-I_{l,m})^2+(I_{l,m+1}-I_{l,m})^2]\)</span></p>
+<p>where l and m are pixel coordinates and I is the image. There are however other similar regularizers like Total variation that favors pixel-to-pixel smoothness.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># p is the exponent of the regularizing terms</span>
+<span class="c1"># The smaller p the more sensitive it is to noise</span>
+<span class="c1"># TSV = Total Squared Variation</span>
+<span class="k">def</span> <span class="nf">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">tsv</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;p value not set&quot;</span><span class="p">)</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">tsv</span><span class="p">:</span>
+        <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_lshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
+        <span class="n">image_upshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">image_upshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_upshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">image_upshift</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_upshift</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
+
+        <span class="n">term_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">image_lshift</span><span class="p">,</span> <span class="n">image</span><span class="p">)),</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">term_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">image_upshift</span><span class="p">,</span> <span class="n">image</span><span class="p">)),</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">term_1</span><span class="p">,</span><span class="n">term_2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">reg</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we test the calc_regulaizer function using an empty image, a monotone image, and a noisy image.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">empty_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">80</span><span class="p">,</span><span class="mi">80</span><span class="p">))</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">empty_image</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" src="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">noisy_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">noisy_image</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png" src="_images/73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">monotone_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">80</span><span class="p">,</span><span class="mi">80</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">monotone_image</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/6be4452fe7135bd154aa8e9b3b8b2f5a0a719dc140f6f685c13ea78a004b870f.png" src="_images/6be4452fe7135bd154aa8e9b3b8b2f5a0a719dc140f6f685c13ea78a004b870f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Empty:&quot;</span><span class="p">,</span><span class="n">calc_regularizer</span><span class="p">(</span><span class="n">empty_image</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Noisy:&quot;</span><span class="p">,</span><span class="n">calc_regularizer</span><span class="p">(</span><span class="n">noisy_image</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Monotone:&quot;</span><span class="p">,</span><span class="n">calc_regularizer</span><span class="p">(</span><span class="n">monotone_image</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Empty: -0.0
+Noisy: -2108.9772836537513
+Monotone: 0
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we see that the regularizer favors smooth images over noisy/rough ones. It is important to note that both the empty image and the monotone image have a regularizer of 0. This is because we weight the images towards smoother images.</p>
+<p>This is the gradient of the regularizer.
+We calculate each point in the picture by doing <span class="math notranslate nohighlight">\(x_{i+1,j} + x_{i-1,j} + x_{i,j+1} + x_{i,j-1} - 4x_{i,j}\)</span> for each i,j pixels</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+    <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_lshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
+    <span class="n">image_upshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image_upshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_upshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">image_upshift</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_upshift</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
+    <span class="n">image_rshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image_rshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_rshift</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">image_rshift</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_rshift</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> 
+    <span class="n">image_dshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">image_dshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_dshift</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">image_dshift</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_lshift</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
+    <span class="n">g_reg</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">image</span> <span class="o">-</span> <span class="n">image_lshift</span> <span class="o">-</span> <span class="n">image_upshift</span> <span class="o">-</span> <span class="n">image_rshift</span> <span class="o">-</span> <span class="n">image_dshift</span>
+    <span class="k">return</span> <span class="n">g_reg</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Empty:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">gradient_regularizer</span><span class="p">(</span><span class="n">empty_image</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Noisy:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">gradient_regularizer</span><span class="p">(</span><span class="n">noisy_image</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Monotone:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">gradient_regularizer</span><span class="p">(</span><span class="n">monotone_image</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Empty:
+ [[0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+Noisy:
+ [[ 1.04025833  0.31293167 -1.48128372 ...  0.22462667  0.2264166
+   0.58445354]
+ [-1.45402225  1.290966   -1.51713099 ...  1.15713575 -0.19833866
+  -0.09194965]
+ [ 0.1087026   1.74525518 -1.26408352 ... -0.34713719 -0.77749415
+  -0.57635953]
+ ...
+ [ 1.18315853  0.50915739 -0.48980817 ... -1.33555771  2.27147516
+   0.3352341 ]
+ [-1.47661333  0.64698704 -1.56710514 ...  0.77084388 -2.04752708
+  -0.40909334]
+ [ 1.24388255 -1.59917979  1.76252233 ... -0.75868688  0.32312203
+   0.84747094]]
+Monotone:
+ [[0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ ...
+ [0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -434,13 +783,22 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="markdown-notebooks.html"
+       href="data.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Notebooks with MyST Markdown</p>
+        <p class="prev-next-title">Intro and Setup</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="loss.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Loss</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -449,7 +807,25 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background-on-fov-and-k-space">Background on FOV and k-space</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">Interpolation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-stuff-about-cublic-splines-get-permission-first">include stuff about cublic splines? Get permission first</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

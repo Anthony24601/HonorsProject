@@ -1,0 +1,156 @@
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anthonyhsu/Library/Python/3.11/lib/python/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+N = 64;  coeff = 1.e-9;  Breg = 10000.;  Nreg = 100.
+
+"""
+Make sure N and coeffs are same as mine
+Coeff needs to change U,V smaller to fit in grid
+In original code, U,Vs are power of 10^{10} and this scalling pushes them into -10 to 10
+"""
+
+# reading data
+list_of_strings = []
+with open('data', 'r') as f:
+  for line in f:
+    list_of_strings.append(line)
+Na = len(list_of_strings) #-1 For mine because there is extra line 
+UVa, sigma = np.zeros((2*Na, 2)), np.zeros(2*Na)
+Oa = np.zeros(2*Na).astype(complex)
+for a in range(Na):
+  current_string = (list_of_strings[-1]).split(" ") # Split on commas
+  list_of_strings.pop()
+  UVa[a, 0], UVa[a, 1] = float(current_string[3]), float(current_string[4])
+  Oa[a] = float(current_string[5])*np.exp(1j*float(current_string[6])*np.pi/180.)
+  sigma[a] = float(current_string[7])
+  UVa[a + Na], Oa[a + Na], sigma[a + Na] = -UVa[a], np.conj(Oa[a]), sigma[a]
+del list_of_strings, current_string
+
+# local cubic interpolation
+def cubf1(x, y):                              #      8  11
+  cf1 = (1. + x - x*x)*(1. + 2.*y)*(1. - y)   #   8  2  3  10
+  cf2 = (1. + y - y*y)*(1. + 2.*x)*(1. - x)   #   4  0  1  6
+  return 0.5*(cf1 + cf2)*(1. - x)*(1. - y)    #      5  7
+def cubf2(x, y):  return -0.5*x*(1. - x)*(1. - x)*(1. + 2.*y)*(1. - y)*(1. - y)
+IND = np.array([[-2, -2], [-1, -2], [-2, -1], [-1, -1], [-3, -2], [-2, -3], \
+  [0, -2], [-1, -3], [-3, -1], [-2, 0], [0, -1], [-1, 0]]).astype(int)
+def cubfun12(x, y):  return np.array([cubf1(x, y), cubf1(1. - x, y), \
+    cubf1(x, 1. - y), cubf1(1. - x, 1. - y), cubf2(x, y), cubf2(y, x), \
+    cubf2(1. - x, y), cubf2(y, 1. - x), cubf2(x, 1. - y), cubf2(1. - y, x), \
+    cubf2(1. - x, 1. - y), cubf2(1. - y, 1. - x)])
+
+"""
+Calculate DO
+Compare G = -2DO
+"""
+
+# computing DO, the dirty image from observations
+DOuv = np.zeros((N, N)).astype(complex)
+for a in range(2*Na):
+  m = np.mod(coeff*UVa[a], N);  x, y = m - np.floor(m)
+  m1, m2 = np.floor(np.mod(m + np.array([2., 2.]), N)).astype(int)
+  C, CUBFUN = Oa[a] / sigma[a]**2, cubfun12(x, y)
+  for c in range(12):  DOuv[m1 + IND[c, 0], m2 + IND[c, 1]] += C*CUBFUN[c]
+DO = N*np.real(np.fft.ifft2(DOuv))
+del DOuv
+
+# computing DK, the dirty kernel
+DK49, DK = np.zeros((N, N, 7, 7)), []
+for a in range(2*Na):
+  m = np.mod(coeff*UVa[a], N);  x, y = m - np.floor(m)
+  m1, m2 = np.floor(np.mod(m + np.array([2., 2.]), N)).astype(int)
+  C, CUBFUN = 1. / sigma[a]**2, cubfun12(x, y)
+  for c in range(12):
+    for cp in range(12):
+      DK49[m1 + IND[c, 0], m2 + IND[c, 1], 3 + IND[cp, 0] - IND[c, 0], \
+           3 + IND[cp, 1] - IND[c, 1]] += CUBFUN[c]*CUBFUN[cp]*C
+for u in range(N):
+  for v in range(N):
+    for du in range(7):
+      for dv in range(7):
+        if (DK49[u, v, du, dv] != 0.):
+          DK.append([u, v, ((u + du) % N) - 3, ((v + dv) % N) - 3, \
+            DK49[u, v, du, dv]])
+del DK49, IND, CUBFUN
+
+# computing DI, the dirtying of the image I
+I12, Iuv = np.zeros((2, N, N)), np.zeros((N, N)).astype(complex)
+DI, DIuv = np.zeros((N, N)), np.zeros((N, N)).astype(complex)
+def calc_DI():
+  global Iuv, DI, DIuv
+  Iuv, DIuv = np.fft.fft2(I), np.zeros((N, N)).astype(complex)
+  for q in DK:  DIuv[q[0], q[1]] += q[4]*Iuv[q[2], q[3]]
+  DI = np.real(np.fft.ifft2(DIuv))
+  return
+
+# computing G, the gradient of the loss function
+def neighbor(Iat, Inear):  return np.sign(Iat - Inear)
+def calc_G():
+  global G
+  calc_DI()
+  G = 2.*(DI - DO)
+#  G = np.zeros((N, N))
+  for i in range(N):
+    for j in range(N):
+      if (I[i, j] < 0.):  G[i, j] -= Breg
+      if (I[i, j] > 0.):  G[i, j] += Nreg
+#      G[i, j] += Breg*neighbor(I[i, j], 0.)
+#      G[i, j] += Nreg*neighbor(I[i, j], I[i - 1, j])
+#      G[i, j] += Nreg*neighbor(I[i, j], I[i, j - 1])
+#      G[i, j] += Nreg*neighbor(I[i, j], I[(i + 1) % N, j])
+#      G[i, j] += Nreg*neighbor(I[i, j], I[i, (j + 1) % N])
+  return
+
+I, dt = (0.*DO), 0.00001
+for it in range(4000):
+#  print(it)
+  calc_G()
+  I -= dt*G
+
+#calc_DI()
+for i in range(N):
+  for j in range(N):
+#    print(I[i, j], ' ', end='')
+    print(DI[i, j] - DO[i, j], ' ', end='')
+  print('')
+
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mIsADirectoryError[0m                         Traceback (most recent call last)
+Cell [0;32mIn[2], line 11[0m
+[1;32m      9[0m [38;5;66;03m# reading data[39;00m
+[1;32m     10[0m list_of_strings [38;5;241m=[39m []
+[0;32m---> 11[0m [38;5;28;01mwith[39;00m [38;5;28;43mopen[39;49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mdata[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mr[39;49m[38;5;124;43m'[39;49m[43m)[49m [38;5;28;01mas[39;00m f:
+[1;32m     12[0m   [38;5;28;01mfor[39;00m line [38;5;129;01min[39;00m f:
+[1;32m     13[0m     list_of_strings[38;5;241m.[39mappend(line)
+
+File [0;32m~/Library/Python/3.11/lib/python/site-packages/IPython/core/interactiveshell.py:286[0m, in [0;36m_modified_open[0;34m(file, *args, **kwargs)[0m
+[1;32m    279[0m [38;5;28;01mif[39;00m file [38;5;129;01min[39;00m {[38;5;241m0[39m, [38;5;241m1[39m, [38;5;241m2[39m}:
+[1;32m    280[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    281[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mIPython won[39m[38;5;124m'[39m[38;5;124mt let you open fd=[39m[38;5;132;01m{[39;00mfile[38;5;132;01m}[39;00m[38;5;124m by default [39m[38;5;124m"[39m
+[1;32m    282[0m         [38;5;124m"[39m[38;5;124mas it is likely to crash IPython. If you know what you are doing, [39m[38;5;124m"[39m
+[1;32m    283[0m         [38;5;124m"[39m[38;5;124myou can use builtins[39m[38;5;124m'[39m[38;5;124m open.[39m[38;5;124m"[39m
+[1;32m    284[0m     )
+[0;32m--> 286[0m [38;5;28;01mreturn[39;00m [43mio_open[49m[43m([49m[43mfile[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[43margs[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
+
+[0;31mIsADirectoryError[0m: [Errno 21] Is a directory: 'data'
+

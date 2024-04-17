@@ -4,7 +4,9 @@
 format: jb-book
 root: intro
 chapters:
-- file: markdown
-- file: notebooks
-- file: markdown-notebooks
+- file: data
 - file: interpolation
+- file: loss
+- file: finite_gradient
+- file: dirty_gradient
+- file: utility
