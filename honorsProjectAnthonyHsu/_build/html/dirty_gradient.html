@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Gradient Calculations: “Dirtying” the Image &#8212; My sample book</title>
+    <title>Gradient Calculations: “Dirtying” the Image &#8212; Exploring Gradient Descent On Image Reconstruction with EHT data</title>
   
   
   
@@ -62,9 +62,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'dirty_gradient';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utility Appendix" href="utility.html" />
     <link rel="prev" title="Gradient Calculations: Finite Differences" href="finite_gradient.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -160,8 +163,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
   
 </a></div>
@@ -171,18 +174,17 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Welcome to your Jupyter Book
+                    Cover
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup</a></li>
-
-
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup Use Diff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interpolation.html">Interpolation and Regularizers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
 <li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Gradient Calculations: “Dirtying” the Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utility Appendix</a></li>
 </ul>
 
     </div>
@@ -378,7 +380,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-dirtying-the-image">Method two: Dirtying the Image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-dirtying-the-image">Method two: Dirtying the Image</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#continuing-further">Continuing Further</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -402,6 +407,15 @@ document.write(`
 <section id="method-two-dirtying-the-image">
 <h2>Method two: Dirtying the Image<a class="headerlink" href="#method-two-dirtying-the-image" title="Permalink to this heading">#</a></h2>
 <p>Here, we use a different method of computing gradients in order to speed up the gradient calculation process. By doing so, we should also see an increase in speed for the gradient descent.</p>
+<p>First we start with the Gradient calculation. Consider the following loss term $<span class="math notranslate nohighlight">\(L_{data}(I) = \sum_a\frac{|I(u_a,v_a)-O_a|^2}{\sigma_a^2}\)</span>$</p>
+<p>Here a represents which data point, O_a represents the data point itself, i and j are pixel coordinates, <span class="math notranslate nohighlight">\(I_{ij}\)</span> is the image. By doing this, we get the gradient to be: $<span class="math notranslate nohighlight">\(G_{ij} = \frac{\partial L_{data}}{\partial I_{ij}} = \sum_a \frac{1}{\sigma_a^2}(\frac{\partial I(u_a,v_a)}{\partial I_{ij}}(I^*(u_a,v_a)-O_a^*) + (I(u_a,v_a)-O_a)\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}})\)</span>$</p>
+<p>Ideally we can compute the partial derivates as $<span class="math notranslate nohighlight">\(\frac{\partial I(u_a,v_a)}{\partial I_{ij}} = exp(\frac{2\pi i}{N}(iu_a+jv_a)), \frac{\partial I^*(u_a,v_a)}{\partial I_{ij}} = exp(-\frac{2\pi i}{N}(iu_a+jv_a))\)</span>$</p>
+<p>N is the size of the image in pixels</p>
+<p>We can further define things like so:</p>
+<p>We introduce the so-called “dirty” image from observations as $<span class="math notranslate nohighlight">\(DO_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}O_a\)</span>$</p>
+<p>Here <span class="math notranslate nohighlight">\(I^*(u_a,v_a)\)</span> is the fourier domain of the image at an observed data point.</p>
+<p>We also define the “dirtying” of the image I as $<span class="math notranslate nohighlight">\(DI_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}I(u_a,v_a)\)</span>$</p>
+<p>This then gives us that $<span class="math notranslate nohighlight">\(G_{ij} = 2Re(DI_{ij}-DO_{ij})\)</span>$</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/data.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
@@ -411,10 +425,19 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Here we calculate gradient using some preprocessing and derivatives. We also reduce time by using a selection approach.</p>
+<p>Here we preprocess and compute <span class="math notranslate nohighlight">\(\frac{\partial I(u_a,v_a)}{\partial I_{ij}}, \frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}\)</span></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">preprocess_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Precomputed the coefficients decribed in dirty gradient</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a 4d list of coefficients</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="n">preprocessed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">r</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">),</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex_</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
@@ -437,51 +460,45 @@ document.write(`
 </div>
 </div>
 </div>
+<p>Now, we can use the formula above to compute the gradient of the image directly</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">subset_percent</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a gradient based on dirting the image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        coeffs is the precomputed coefficients</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the gradient of the loss function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gradient_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">image</span><span class="p">))</span> <span class="c1"># Because we are in real space</span>
     <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
-    <span class="n">selection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span><span class="o">*</span><span class="n">subset_percent</span><span class="o">//</span><span class="mi">100</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># selection is full of indicies</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
-            <span class="n">gradient_sum</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
-                <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">vis_data</span>
-                <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">term_1</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_image</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_data</span><span class="p">))</span>
-                <span class="n">term_2</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">vis_image</span> <span class="o">-</span> <span class="n">vis_data</span><span class="p">)</span>
-                <span class="n">gradient_sum</span> <span class="o">+=</span> <span class="p">(</span><span class="n">term_1</span> <span class="o">+</span> <span class="n">term_2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradient_sum</span>
-    <span class="k">return</span> <span class="n">gradient_arr</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dirty_gradient_simple</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">subset_percent</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
-    <span class="n">gradient_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">image</span><span class="p">))</span> <span class="c1"># Because we are in real space</span>
-    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
-    <span class="c1"># selection = np.random.choice(np.arange(len(data_list)), size=len(coords)*subset_percent//100, replace=False) # selection is full of indicies</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
             <span class="n">gradient_sum</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
-                <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">vis_data</span>
+                <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1"># Ask about this on Wednesday</span>
                 <span class="n">term_1</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_image</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_data</span><span class="p">))</span>
                 <span class="n">term_2</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">vis_image</span> <span class="o">-</span> <span class="n">vis_data</span><span class="p">)</span>
-                <span class="n">gradient_sum</span> <span class="o">+=</span> <span class="p">(</span><span class="n">term_1</span> <span class="o">+</span> <span class="n">term_2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># What should I set sigma to?</span>
-            <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradient_sum</span>
+                <span class="n">gradient_sum</span> <span class="o">+=</span> <span class="p">(</span><span class="n">term_1</span> <span class="o">+</span> <span class="n">term_2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradient_sum</span><span class="o">.</span><span class="n">real</span>
     <span class="k">return</span> <span class="n">gradient_arr</span>
+
+
+<span class="c1"># Why is it made of fourier harmonics</span>
+<span class="c1"># Setting Visibilities of 1 for the purposes of this work</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">dirty_gradient_simple</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">emp</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
@@ -489,41 +506,56 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/_b/trlmhkgj5xq968yccj4vtg1c0000gn/T/ipykernel_69440/1027418742.py:14: ComplexWarning: Casting complex values to real discards the imaginary part
-  gradient_arr[row,col] = gradient_sum
-</pre></div>
-</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png" src="_images/1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png" />
+<img alt="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" src="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" />
 </div>
 </div>
+<p>Below is the gradient descent routine done in the fine gradient code</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">),</span> <span class="n">stopper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dirty</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs gradient descent to reconstruct the image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        coeffs is the precomputed coefficients</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">        stopper allows the descent to stop at 20 iterations</span>
+<span class="sd">        dirty changes the gradient mode to dirty kernel</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the reconstructed image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">image_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Uses copy of the image due to lists being mutable in python</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">grad</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Can also use max here, min just makes it finish quicker</span>
-    <span class="k">while</span> <span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.0000001</span><span class="p">:</span>
-
+    <span class="k">while</span> <span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.00001</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="mi">10000000</span> <span class="c1"># Initial Step size which resets each iteration</span>
-        <span class="n">prev_loss</span> <span class="o">=</span> <span class="n">simple_loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">dirty_gradient_simple</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image_copy</span><span class="p">)</span>
+        <span class="n">prev_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dirty</span><span class="p">:</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image_copy</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient_finite_differences</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image_copy</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
 
         <span class="n">new_image</span> <span class="o">=</span> <span class="n">image_copy</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span>
-        <span class="n">new_loss</span> <span class="o">=</span> <span class="n">simple_loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+        <span class="n">new_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
         
         <span class="k">while</span> <span class="n">new_loss</span> <span class="o">&gt;</span> <span class="n">prev_loss</span><span class="p">:</span> <span class="c1"># Only run when new_loss &gt; prev_loss</span>
             <span class="n">new_image</span> <span class="o">=</span> <span class="n">image_copy</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span>
-            <span class="n">new_loss</span> <span class="o">=</span> <span class="n">simple_loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+            <span class="n">new_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">/=</span> <span class="mi">2</span>
 
         <span class="n">image_copy</span> <span class="o">-=</span> <span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span> <span class="c1"># Multiply by 2 to undo last divide in the while loop</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1000</span><span class="p">:</span> <span class="c1"># Hard stop here for notebook purposes</span>
-            <span class="k">return</span> <span class="n">image_copy</span>
+        <span class="k">if</span> <span class="n">stopper</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">stopper</span><span class="p">:</span> <span class="c1"># Hard stop here for notebook purposes</span>
+                <span class="k">return</span> <span class="n">image_copy</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loss:&quot;</span><span class="p">,</span><span class="n">new_loss</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">image_copy</span>
 </pre></div>
 </div>
@@ -531,7 +563,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#x = gradient_descent(emp,data_list,coords,coeffs)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># x = gradient_descent(emp,data_list,coords,coeffs)</span>
 </pre></div>
 </div>
 </div>
@@ -548,9 +580,157 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png" src="_images/1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png" />
+<img alt="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" src="_images/50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png" />
 </div>
 </div>
+<section id="continuing-further">
+<h3>Continuing Further<a class="headerlink" href="#continuing-further" title="Permalink to this heading">#</a></h3>
+<p>Now lets say that DFT (Discrete fourier transform) is defined as
+$<span class="math notranslate nohighlight">\(I(u,v) = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(-\frac{2\pi i}{N}(iu+jv))I_{ij}\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(I_{ij} = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(\frac{2\pi i}{N}(iu+jv))I(u,v)\)</span>$</p>
+<p>The interpolation scheme computes <span class="math notranslate nohighlight">\(I(u_a,v_a)\)</span> as <span class="math notranslate nohighlight">\(I(u_a,v_a) = \sum_{u,v = 0}^{N-1} W(u_a,v_a|u,v)I(u,v)\)</span> where <span class="math notranslate nohighlight">\(W(u_a,v_a|u,v)\)</span> stands for the weights of <span class="math notranslate nohighlight">\(u_a,v_a\)</span> at u and v. The interpolation scheme will compute with only a few weights being non-zero for each a (assuming the interpolation is done in a local way). Putting this expression into <span class="math notranslate nohighlight">\(I(u,v)\)</span> we get</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial I(u_a,v_a)}{\partial I_{ij}} = \frac{1}{N}\sum^{N-1}_{u,v = 0} W(u_a,v_a|u,v) exp(-\frac{2\pi i}{N}(iu+jv))\]</div>
+<p>We this, we see that the partial derivative <span class="math notranslate nohighlight">\(\frac{\partial I(u_a,v_a)}{\partial I_{ij}}\)</span> is the interpolation of the Fourier transform kernel.</p>
+<p>Now, we can rewrite our formula for the Dirty Image.</p>
+<div class="math notranslate nohighlight">
+\[DI(u,v) = \frac{1}{N}\sum_{i,j} exp(-\frac{2\pi i}{N}(iu+jv))DI_{ij}\]</div>
+<div class="math notranslate nohighlight">
+\[ = \frac{1}{N}\sum_{i,j} exp(-\frac{2\pi i}{N}(iu+jv)) \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}I(u_a,v_a)\]</div>
+<div class="math notranslate nohighlight">
+\[ = \frac{1}{N}\sum_{i,j} exp(-\frac{2\pi i}{N}(iu+jv)) \sum_a \frac{1}{\sigma^2_a}\frac{1}{N}\sum^{N-1}_{u',v' = 0} W(u_a,v_a|u',v') exp(-\frac{2\pi i}{N}(iu'+jv'))I(u_a,v_a)\]</div>
+<div class="math notranslate nohighlight">
+\[ = \sum_a \frac{1}{\sigma^2_a}W(u_a,v_a|u,v)I(u_a,v_a) \]</div>
+<div class="math notranslate nohighlight">
+\[ = \sum_a \frac{1}{\sigma^2_a}W(u_a,v_a|u,v)\sum^{N-1}_{u',v' = 0} W(u_a,v_a|u',v')I(u',v')\]</div>
+<p>Now lets finally introduce the “dirty kernel” DK.
+$<span class="math notranslate nohighlight">\(DK(u,v|u',v') = \sum_a \frac{1}{\sigma^2_a}W(u_a,v_a|u,v)W(u_a,v_a|u',v')\)</span>$</p>
+<p>This transforms the dirty image equation to be $<span class="math notranslate nohighlight">\(DI(u,v) = \sum^{N-1}_{u',v' = 0} DK(u,v|u',v') I(u',v')\)</span>$</p>
+<p>Notice here that for each <span class="math notranslate nohighlight">\((u,v)\)</span> there are only a few points <span class="math notranslate nohighlight">\((u',v')\)</span> close by where <span class="math notranslate nohighlight">\(DK(u,v|u',v') \neq 0\)</span>. Thus for each point <span class="math notranslate nohighlight">\((u,v)\)</span> in the Fourier domain, we can create a small list of <span class="math notranslate nohighlight">\((u',v')\)</span> points with tabulated <span class="math notranslate nohighlight">\(DK\)</span> values.</p>
+<p>Another important note is that we can dirty the image quickly since the dirty kernel is able to be precomputed. We can do so since it only depends on observational data. The time complexity of going from the image to the fourier domain using DFT is about <span class="math notranslate nohighlight">\(O(N^2lnN)\)</span> whereas the time complexity of going from image to dirty image by using the dirty kernel method is about <span class="math notranslate nohighlight">\(O(N^2)\)</span>.</p>
+<p>The code below was written by Misha Stepanov in order to quickly calculate DI, DO, and DK.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">80</span><span class="p">;</span>  <span class="n">coeff</span> <span class="o">=</span> <span class="mf">4.84813681109536e-10</span><span class="p">;</span>  <span class="n">Breg</span> <span class="o">=</span> <span class="mf">10000.</span><span class="p">;</span>  <span class="n">Nreg</span> <span class="o">=</span> <span class="mf">100.</span>
+
+<span class="c1"># reading data</span>
+<span class="n">list_of_strings</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./data/SR1_M87_2017_095_hi_hops_netcal_StokesI.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">list_of_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">list_of_strings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Na</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_strings</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_of_strings</span><span class="p">))</span>
+<span class="n">UVa</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">Na</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Na</span><span class="p">)</span>
+<span class="n">Oa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Na</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Na</span><span class="p">):</span>
+  <span class="n">current_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">list_of_strings</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="c1"># Split on commas</span>
+  <span class="n">list_of_strings</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+  <span class="n">UVa</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">UVa</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_string</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_string</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+  <span class="n">Oa</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_string</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">current_string</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span><span class="p">)</span>
+  <span class="n">sigma</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_string</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+  <span class="n">UVa</span><span class="p">[</span><span class="n">a</span> <span class="o">+</span> <span class="n">Na</span><span class="p">],</span> <span class="n">Oa</span><span class="p">[</span><span class="n">a</span> <span class="o">+</span> <span class="n">Na</span><span class="p">],</span> <span class="n">sigma</span><span class="p">[</span><span class="n">a</span> <span class="o">+</span> <span class="n">Na</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">UVa</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">Oa</span><span class="p">[</span><span class="n">a</span><span class="p">]),</span> <span class="n">sigma</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="k">del</span> <span class="n">list_of_strings</span><span class="p">,</span> <span class="n">current_string</span>
+
+<span class="c1"># local cubic interpolation</span>
+<span class="k">def</span> <span class="nf">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>                              <span class="c1">#      8  11</span>
+  <span class="n">cf1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>   <span class="c1">#   8  2  3  10</span>
+  <span class="n">cf2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>   <span class="c1">#   4  0  1  6</span>
+  <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">cf1</span> <span class="o">+</span> <span class="n">cf2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>    <span class="c1">#      5  7</span>
+<span class="k">def</span> <span class="nf">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>  <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">IND</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> \
+  <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cubfun12</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf1</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> \
+    <span class="n">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf1</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> \
+    <span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> \
+    <span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">),</span> <span class="n">cubf2</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span><span class="p">)])</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculate DO</span>
+<span class="sd">Compare G = -2DO</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># computing DO, the dirty image from observations</span>
+<span class="n">DOuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Na</span><span class="p">):</span>
+  <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">coeff</span><span class="o">*</span><span class="n">UVa</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">N</span><span class="p">);</span>  <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+  <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]),</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+  <span class="n">C</span><span class="p">,</span> <span class="n">CUBFUN</span> <span class="o">=</span> <span class="n">Oa</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">cubfun12</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>  <span class="n">DOuv</span><span class="p">[</span><span class="n">m1</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m2</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">C</span><span class="o">*</span><span class="n">CUBFUN</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+<span class="n">DO</span> <span class="o">=</span> <span class="n">N</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">DOuv</span><span class="p">))</span>
+<span class="k">del</span> <span class="n">DOuv</span>
+
+<span class="c1"># computing DK, the dirty kernel</span>
+<span class="n">DK49</span><span class="p">,</span> <span class="n">DK</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">)),</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Na</span><span class="p">):</span>
+  <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">coeff</span><span class="o">*</span><span class="n">UVa</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">N</span><span class="p">);</span>  <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+  <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]),</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+  <span class="n">C</span><span class="p">,</span> <span class="n">CUBFUN</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">cubfun12</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
+      <span class="n">DK49</span><span class="p">[</span><span class="n">m1</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m2</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">cp</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> \
+           <span class="mi">3</span> <span class="o">+</span> <span class="n">IND</span><span class="p">[</span><span class="n">cp</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">IND</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">CUBFUN</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">*</span><span class="n">CUBFUN</span><span class="p">[</span><span class="n">cp</span><span class="p">]</span><span class="o">*</span><span class="n">C</span>
+<span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+      <span class="k">for</span> <span class="n">dv</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">DK49</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">du</span><span class="p">,</span> <span class="n">dv</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+          <span class="n">DK</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">((</span><span class="n">u</span> <span class="o">+</span> <span class="n">du</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="p">((</span><span class="n">v</span> <span class="o">+</span> <span class="n">dv</span><span class="p">)</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> \
+            <span class="n">DK49</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">du</span><span class="p">,</span> <span class="n">dv</span><span class="p">]])</span>
+<span class="k">del</span> <span class="n">DK49</span><span class="p">,</span> <span class="n">IND</span><span class="p">,</span> <span class="n">CUBFUN</span>
+
+<span class="c1"># computing DI, the dirtying of the image I</span>
+<span class="n">I12</span><span class="p">,</span> <span class="n">Iuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+<span class="n">DI</span><span class="p">,</span> <span class="n">DIuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">calc_DI</span><span class="p">():</span>
+  <span class="k">global</span> <span class="n">Iuv</span><span class="p">,</span> <span class="n">DI</span><span class="p">,</span> <span class="n">DIuv</span>
+  <span class="n">Iuv</span><span class="p">,</span> <span class="n">DIuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">DK</span><span class="p">:</span>  <span class="n">DIuv</span><span class="p">[</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="n">Iuv</span><span class="p">[</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+  <span class="n">DI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">DIuv</span><span class="p">))</span>
+  <span class="k">return</span>
+
+<span class="c1"># computing G, the gradient of the loss function</span>
+<span class="k">def</span> <span class="nf">neighbor</span><span class="p">(</span><span class="n">Iat</span><span class="p">,</span> <span class="n">Inear</span><span class="p">):</span>  <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">Iat</span> <span class="o">-</span> <span class="n">Inear</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">calc_G</span><span class="p">():</span>
+  <span class="k">global</span> <span class="n">G</span>
+  <span class="n">calc_DI</span><span class="p">()</span>
+  <span class="n">G</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="p">(</span><span class="n">DI</span> <span class="o">-</span> <span class="n">DO</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">):</span>  <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">Breg</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">):</span>  <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Nreg</span>
+  <span class="k">return</span>
+
+<span class="n">I</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="o">*</span><span class="n">DO</span><span class="p">),</span> <span class="mf">0.00001</span>
+
+<span class="n">calc_DI</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6458
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">DO</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;coeff = 1/1/FOV&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;coeff = 1/1/FOV&#39;)
+</pre></div>
+</div>
+<img alt="_images/41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png" src="_images/41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png" />
+</div>
+</div>
+</section>
 </section>
 </section>
 
@@ -593,6 +773,15 @@ document.write(`
         <p class="prev-next-title">Gradient Calculations: Finite Differences</p>
       </div>
     </a>
+    <a class="right-next"
+       href="utility.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Utility Appendix</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -609,7 +798,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-dirtying-the-image">Method two: Dirtying the Image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-dirtying-the-image">Method two: Dirtying the Image</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#continuing-further">Continuing Further</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -624,7 +816,7 @@ document.write(`
   <div class="footer-item">
     
 <p class="component-author">
-By The Jupyter Book Community
+By Anthony Hsu
 </p>
 
   </div>

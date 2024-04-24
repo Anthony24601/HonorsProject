@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Utility &#8212; My sample book</title>
+    <title>Utility Appendix &#8212; Exploring Gradient Descent On Image Reconstruction with EHT data</title>
   
   
   
@@ -65,6 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'utility';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Gradient Calculations: “Dirtying” the Image" href="dirty_gradient.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,8 +160,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
   
 </a></div>
@@ -170,18 +171,17 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Welcome to your Jupyter Book
+                    Cover
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup</a></li>
-
-
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup Use Diff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interpolation.html">Interpolation and Regularizers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
 <li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Utility Appendix</a></li>
 </ul>
 
     </div>
@@ -365,7 +365,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Utility</h1>
+    <h1>Utility Appendix</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -379,8 +379,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="utility">
-<h1>Utility<a class="headerlink" href="#utility" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="utility-appendix">
+<h1>Utility Appendix<a class="headerlink" href="#utility-appendix" title="Permalink to this heading">#</a></h1>
 <p>This is the Utility File with all of the functions put in so that all the Juypter Notebooks can use any of these functions</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -427,6 +427,15 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="n">data_df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes the data in the dataframe into a coords list and data objects</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_df is a pandas data frame of the data</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a list of coordinates in u,v space</span>
+<span class="sd">        a list of data objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_df</span><span class="p">)):</span>
@@ -440,7 +449,14 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">()):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    reads the data from a file into a pandas dataframe</span>
+<span class="sd">    Args:</span>
+<span class="sd">        filename is a string that represents a csv file</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a pandas dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span>
 </pre></div>
@@ -457,13 +473,93 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumption image is 80x80 pixels</span>
-<span class="c1"># Pass in array of u,v coords then return array of interpolated values</span>
-<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">reg_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    image is a 80x80 pixel image that represents our reconstructed image</span>
-<span class="sd">    coords is a list of u,v coordinates that we obtained from our data</span>
-<span class="sd">    FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    calculates the loss of an image compared to the data given</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        p is the kind of norm to be used</span>
+<span class="sd">        reg_weight is the regularizer weight</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a loss value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">error_sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
+        <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">phase</span><span class="p">))</span>
+        <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">vis_image</span><span class="o">-</span><span class="n">vis_data</span><span class="p">)</span> <span class="o">/</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">error_sum</span> <span class="o">+=</span> <span class="n">error</span>
+    
+    <span class="k">return</span> <span class="n">error_sum</span> <span class="o">+</span> <span class="n">reg_weight</span> <span class="o">*</span> <span class="n">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">do_sample</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collects n samples from a sample image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        n is the number of samples as an integer</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a list of coordinates in u,v space</span>
+<span class="sd">        a list of data objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">)))</span>
+        <span class="n">data_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ft_image</span><span class="p">[</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">][</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_losses</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the losses of the image by shifting it around </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        an array of losses where the index is how much the image is shifted starting with -40 to 40</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">loss_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)):</span>
+        <span class="n">image_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Right shifts</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+            <span class="n">image_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># Up shifts</span>
+            <span class="n">loss_arr</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_2</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">reg_weight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            
+    <span class="n">loss_arr1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss_arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr1</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">loss_arr2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss_arr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolates the values of each coordinate in coords in the fourier domain of image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The interpolated values at the coordinates based on image</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
@@ -486,10 +582,16 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># p is the exponent of the regularizing terms</span>
-<span class="c1"># The smaller p the more sensitive it is to noise</span>
-<span class="c1"># TSV = Total Squared Variation</span>
-<span class="k">def</span> <span class="nf">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the regularizer according to total squared variation</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        p is the kind of norm to be used</span>
+<span class="sd">        tsv is the flag for total squared variation</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the regularizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">tsv</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;p value not set&quot;</span><span class="p">)</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="mi">0</span>
@@ -512,6 +614,13 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the gradient of the regularizer</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the gradient of the regularizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_lshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
@@ -532,61 +641,18 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">do_sample</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">-</span><span class="mi">5</span><span class="p">)))</span>
-        <span class="n">data_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ft_image</span><span class="p">[</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">][</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">40</span><span class="p">]))</span>
-    <span class="k">return</span> <span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumption image is 80px by 80px =&gt; 6400 variables</span>
-<span class="k">def</span> <span class="nf">simple_loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">reg_weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="c1">#Ask about u.rad</span>
-    <span class="n">error_sum</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
-        <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">vis_image</span><span class="o">-</span><span class="n">vis_data</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="n">error_sum</span> <span class="o">+=</span> <span class="n">error</span>
-    
-    <span class="k">return</span> <span class="n">error_sum</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_losses</span><span class="p">():</span>
-    <span class="n">loss_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)):</span>
-        <span class="n">image_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Right shifts</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-            <span class="n">image_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># Up shifts</span>
-            <span class="n">loss_arr</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simple_loss</span><span class="p">(</span><span class="n">image_2</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">reg_weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Note here for why we shift</span>
-    <span class="n">loss_arr1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">loss_arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">loss_arr1</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">loss_arr2</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">loss_arr</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_finite_differences</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="c1"># 0 For central, -1 for backward, 1 for forward</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_finite_differences</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a gradient based on finite differences</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        mode is the type of difference used: 0 For central, -1 for backward, 1 for forward</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the gradient of the loss function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">image_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">upper_diff</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">lower_diff</span><span class="p">:</span> <span class="nb">float</span>
@@ -596,30 +662,136 @@ document.write(`
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-6</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+                <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1e-6</span>
-                <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+                <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="c1"># Reset that pixel to original value</span>
                 <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">upper_diff</span> <span class="o">-</span> <span class="n">lower_diff</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e-6</span>
     <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># Backward difference</span>
-        <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+        <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">1e-8</span>
-                <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+                <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
                 <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">upper_diff</span> <span class="o">-</span> <span class="n">lower_diff</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e-8</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span>
     <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="c1"># Forward difference is default</span>
-        <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+        <span class="n">lower_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-8</span> 
-                <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+                <span class="n">upper_diff</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
                 <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">upper_diff</span> <span class="o">-</span> <span class="n">lower_diff</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e-8</span>
                 <span class="n">image_copy</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Incorrect mode for finite differences&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gradient_arr</span><span class="o">.</span><span class="n">real</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">),</span> <span class="n">stopper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dirty</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs gradient descent to reconstruct the image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        coeffs is the precomputed coefficients</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">        stopper allows the descent to stop at 20 iterations</span>
+<span class="sd">        dirty changes the gradient mode to dirty kernel</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the reconstructed image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Uses copy of the image due to lists being mutable in python</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Can also use max here, min just makes it finish quicker</span>
+    <span class="k">while</span> <span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.00001</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">10000000</span> <span class="c1"># Initial Step size which resets each iteration</span>
+        <span class="n">prev_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">image_copy</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dirty</span><span class="p">:</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image_copy</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient_finite_differences</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image_copy</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
+
+        <span class="n">new_image</span> <span class="o">=</span> <span class="n">image_copy</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">new_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
+        
+        <span class="k">while</span> <span class="n">new_loss</span> <span class="o">&gt;</span> <span class="n">prev_loss</span><span class="p">:</span> <span class="c1"># Only run when new_loss &gt; prev_loss</span>
+            <span class="n">new_image</span> <span class="o">=</span> <span class="n">image_copy</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">new_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">/=</span> <span class="mi">2</span>
+
+        <span class="n">image_copy</span> <span class="o">-=</span> <span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span> <span class="c1"># Multiply by 2 to undo last divide in the while loop</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">stopper</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">stopper</span><span class="p">:</span> <span class="c1"># Hard stop here for notebook purposes</span>
+                <span class="k">return</span> <span class="n">image_copy</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loss:&quot;</span><span class="p">,</span><span class="n">new_loss</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image_copy</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">preprocess_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Precomputed the coefficients decribed in dirty gradient</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a 4d list of coefficients</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">preprocessed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">r</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">),</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex_</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
+            <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span><span class="o">/</span><span class="n">image</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">row</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="n">datum</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">col</span><span class="o">*</span><span class="n">coords</span><span class="p">[</span><span class="n">datum</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1">#.size for numpy array returns # of rows * # of cols</span>
+                <span class="n">term_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+                <span class="n">term_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">term</span><span class="p">)</span>
+                <span class="n">preprocessed</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">datum</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">term_1</span>
+                <span class="n">preprocessed</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">datum</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">term_2</span>
+    <span class="k">return</span> <span class="n">preprocessed</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dirty_gradient</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a gradient based on dirting the image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_list is a list of data objects</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        coeffs is the precomputed coefficients</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the gradient of the loss function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gradient_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">image</span><span class="p">))</span> <span class="c1"># Because we are in real space</span>
+    <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">row</span><span class="p">])):</span>
+            <span class="n">gradient_sum</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
+                <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">vis_data</span>
+                <span class="n">vis_image</span> <span class="o">=</span> <span class="n">vis_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="c1"># Ask about this on Wednesday</span>
+                <span class="n">term_1</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_image</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">vis_data</span><span class="p">))</span>
+                <span class="n">term_2</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">vis_image</span> <span class="o">-</span> <span class="n">vis_data</span><span class="p">)</span>
+                <span class="n">gradient_sum</span> <span class="o">+=</span> <span class="p">(</span><span class="n">term_1</span> <span class="o">+</span> <span class="n">term_2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">gradient_arr</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradient_sum</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">gradient_arr</span>
 </pre></div>
 </div>
 </div>
@@ -656,6 +828,15 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="dirty_gradient.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Gradient Calculations: “Dirtying” the Image</p>
+      </div>
+    </a>
 </div>
                 </footer>
               
@@ -674,7 +855,7 @@ document.write(`
   <div class="footer-item">
     
 <p class="component-author">
-By The Jupyter Book Community
+By Anthony Hsu
 </p>
 
   </div>

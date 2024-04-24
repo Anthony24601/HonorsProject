@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Intro and Setup &#8212; My sample book</title>
+    <title>Intro and Setup Use Diff &#8212; Exploring Gradient Descent On Image Reconstruction with EHT data</title>
   
   
   
@@ -68,7 +68,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Interpolation and Regularizers" href="interpolation.html" />
-    <link rel="prev" title="Welcome to your Jupyter Book" href="intro.html" />
+    <link rel="prev" title="Cover" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,8 +163,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
   
 </a></div>
@@ -174,18 +174,17 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Welcome to your Jupyter Book
+                    Cover
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Intro and Setup</a></li>
-
-
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Intro and Setup Use Diff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interpolation.html">Interpolation and Regularizers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
 <li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utility Appendix</a></li>
 </ul>
 
     </div>
@@ -371,7 +370,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Intro and Setup</h1>
+    <h1>Intro and Setup Use Diff</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -381,14 +380,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Intro and Setup</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#paste-images-here">Paste images here</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-details">Data Details</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-details-about-the-table">Some Details about the Table</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#some-details-about-the-table">Some Details about the Table</a></li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -399,8 +393,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="intro-and-setup">
-<h1>Intro and Setup<a class="headerlink" href="#intro-and-setup" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="intro-and-setup-use-diff">
+<h1>Intro and Setup Use Diff<a class="headerlink" href="#intro-and-setup-use-diff" title="Permalink to this heading">#</a></h1>
 <p>These are all the libraries that are needed</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -418,20 +412,16 @@ document.write(`
 </div>
 </div>
 </div>
-<p>As the earth spins, we trace out a track in the Fourier domain in order to give us one snapshot of the black hole image. On earth we create a sinusoidal wave in order to amplify the data that we recieve from our snapshot. This create two different sine bands. One being hi and the other being low. We can use these two data sets to create two different images for the same day in practice. Theoretically they should create the same image</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="paste-images-here">
-<h1>Paste images here<a class="headerlink" href="#paste-images-here" title="Permalink to this heading">#</a></h1>
 <section id="data-details">
 <h2>Data Details<a class="headerlink" href="#data-details" title="Permalink to this heading">#</a></h2>
-<p>The data set from EHT (The Event Horizon Telescope) and from the HOPS pipeline (software from MIT), comes in multiple sets. From one data collection, we are given a hi band and low band sets.</p>
-<p>Suppose that the sky signal is some radio wave <span class="math notranslate nohighlight">\(Sky = \epsilon \sin(\omega t)\)</span>. The signal however is extremely small which make it hard to detect. In order to pick out this signal, we use a local oscillator which generates another wave (i.e. <span class="math notranslate nohighlight">\(LO = A \sin(\omega't)\)</span>) where A is some amplitude. Once these two signals are multiplied together, we get something like so: <span class="math notranslate nohighlight">\(Sky \times LO = A \epsilon \sin(\omega t) \times \sin(\omega' t) = A \epsilon {\sin[(\omega + \omega')t] + sin [(\omega - \omega')t]}\)</span>.</p>
+<p>In order to capture the image and data of a black hole, we would need a telescope the size of the earth! Although we don’t have one of those, we are still able to obtain some data about black holes by using a technology called Very Long Baseline Interferometry (VLBI). This involves having many telescope around the world. This in tern creates a virtual telescope and allows us to capture the image of the black hole’s silouette.</p>
+<p>The data set from EHT (The Event Horizon Telescope) and from the HOPS pipeline (software from MIT), comes in multiple sets. From one data collection, we are given a hi band and low band sets, and here’s why.</p>
+<p>Suppose that the sky signal is some radio wave <span class="math notranslate nohighlight">\(Sky = \epsilon \sin(\omega t)\)</span>. The signal however is extremely small which make it hard to detect. In order to pick out this signal on earth, we use a local oscillator which generates another wave (i.e. <span class="math notranslate nohighlight">\(LO = A \sin(\omega't)\)</span>) where A is some amplitude. Once these two signals are multiplied together, we get something like so: <span class="math notranslate nohighlight">\(Sky \times LO = A \epsilon \sin(\omega t) \times \sin(\omega' t) = A \epsilon {\sin[(\omega + \omega')t] + sin [(\omega - \omega')t]}\)</span>.</p>
 <p>Here we have <span class="math notranslate nohighlight">\(A \epsilon\)</span> be an amplitude such that the signals are big enough for our instruments to detect.
-The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <span class="math notranslate nohighlight">\(\omega - \omega'\)</span> results in two bands which the data is taken from</p>
+The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <span class="math notranslate nohighlight">\(\omega - \omega'\)</span> results in two bands which the data is taken from. Theoretically the two bands should create the same image but that is not always the case.</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="some-details-about-the-table">
-<h1>Some Details about the Table<a class="headerlink" href="#some-details-about-the-table" title="Permalink to this heading">#</a></h1>
+<section id="some-details-about-the-table">
+<h2>Some Details about the Table<a class="headerlink" href="#some-details-about-the-table" title="Permalink to this heading">#</a></h2>
 <p>time is the time that it was taken. This time stamp is not used because we assume things are static.</p>
 <p>T1 and T2 are the two telescopes.</p>
 <p>U and V are the fourier location of the fourier domain. When we plot each point in the fourier domain, we should obtain something like below #HEREEE They are given in terms of lambda.</p>
@@ -469,6 +459,15 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="n">data_df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes the data in the dataframe into a coords list and data objects</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_df is a pandas data frame of the data</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a list of coordinates in u,v space</span>
+<span class="sd">        a list of data objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">data_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_df</span><span class="p">)):</span>
@@ -482,7 +481,14 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">()):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    reads the data from a file into a pandas dataframe</span>
+<span class="sd">    Args:</span>
+<span class="sd">        filename is a string that represents a csv file</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a pandas dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span>
 </pre></div>
@@ -654,6 +660,7 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
 </div></div></div>
 </div>
 </section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -691,7 +698,7 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to your Jupyter Book</p>
+        <p class="prev-next-title">Cover</p>
       </div>
     </a>
     <a class="right-next"
@@ -719,14 +726,9 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Intro and Setup</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#paste-images-here">Paste images here</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-details">Data Details</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-details-about-the-table">Some Details about the Table</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#some-details-about-the-table">Some Details about the Table</a></li>
-</ul>
-
   </nav></div>
 
 </div></div>
@@ -740,7 +742,7 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
   <div class="footer-item">
     
 <p class="component-author">
-By The Jupyter Book Community
+By Anthony Hsu
 </p>
 
   </div>

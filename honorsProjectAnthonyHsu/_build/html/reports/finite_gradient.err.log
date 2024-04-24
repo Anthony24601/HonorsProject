@@ -37,6 +37,12 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-reconstructed_img = gradient_descent(emp, data_list, coords)
+reconstructed_img = gradient_descent(emp, data_list, coords, FOV = 1, stopper = 15)
+plt.figure()
+plt.imshow(reconstructed_img, vmin=0, vmax=np.max(sample))
+plt.axis('off')
+plt.title("Reconstructed Image")
+
+# Use a graph here
 -------------------
 

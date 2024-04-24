@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Interpolation and Regularizers &#8212; My sample book</title>
+    <title>Interpolation and Regularizers &#8212; Exploring Gradient Descent On Image Reconstruction with EHT data</title>
   
   
   
@@ -68,7 +68,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Loss" href="loss.html" />
-    <link rel="prev" title="Intro and Setup" href="data.html" />
+    <link rel="prev" title="Intro and Setup Use Diff" href="data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,8 +163,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
   
 </a></div>
@@ -174,18 +174,17 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Welcome to your Jupyter Book
+                    Cover
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup</a></li>
-
-
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup Use Diff</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Interpolation and Regularizers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
 <li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utility Appendix</a></li>
 </ul>
 
     </div>
@@ -383,7 +382,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background-on-fov-and-k-space">Background on FOV and k-space</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">Interpolation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-stuff-about-cublic-splines-get-permission-first">include stuff about cublic splines? Get permission first</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cubic-splines">Cubic Splines</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
@@ -426,13 +425,15 @@ for gradient descent.</p>
 <p>Finally, we use a linear method for interpolation due to it’s local interpolation scheme. The other schemes that RegularGridInterpolator offers uses a C^2-smooth split which is a non-local scheme. Since we wanted to optimize the computation time, we chose the linear method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumption image is 80x80 pixels</span>
-<span class="c1"># Pass in array of u,v coords then return array of interpolated values</span>
-<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    image is a 80x80 pixel image that represents our reconstructed image</span>
-<span class="sd">    coords is a list of u,v coordinates that we obtained from our data</span>
-<span class="sd">    FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Interpolates the values of each coordinate in coords in the fourier domain of image</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
+<span class="sd">        FOV is the Field of view from the telescopes. For the EHT data, our FOV is 100 micro ascs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The interpolated values at the coordinates based on image</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
@@ -512,10 +513,11 @@ Actual: (-283386.93411007+533165.1782602723j)
 </div>
 </div>
 </div>
+<section id="cubic-splines">
+<h3>Cubic Splines<a class="headerlink" href="#cubic-splines" title="Permalink to this heading">#</a></h3>
 <p>Below is an interpolation subroutine written by Misha Stepanov.</p>
-<p>The code provides an insight into a local interpolation scheme using 2D cubic splines. It is local in a sense that only 12 grid points around the point at which we are interpolating is used to contribute the the estimation. The code the interpolation is done with data being wrapped into a 2D torus and the xy-coordinates are supplied assuming that the step of the grid in both the x and y directions are equal to 1</p>
-<section id="include-stuff-about-cublic-splines-get-permission-first">
-<h3>include stuff about cublic splines? Get permission first<a class="headerlink" href="#include-stuff-about-cublic-splines-get-permission-first" title="Permalink to this heading">#</a></h3>
+<p>The code provides an insight into a local interpolation scheme using 2D cubic splines. It is local in a sense that only 12 grid points around the point at which we are interpolating is used to contribute the the estimation. The code the interpolation is done with data being wrapped into a 2D torus and the xy-coordinates are supplied assuming that the step of the grid in both the x and y directions are equal to 1.</p>
+<p>We call a piec piecewise cubic function a cubic spline if it interpolates a set of data points while also guaranteeing the smoothness at the data points observed. Splining are often used instead of polynomial interpolations because it yields similar results and avoids the Runge’s phenomenon for higher degree polynomials.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cubf1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -594,10 +596,16 @@ Actual: (-283386.93411007+533165.1782602723j)
 <p>where l and m are pixel coordinates and I is the image. There are however other similar regularizers like Total variation that favors pixel-to-pixel smoothness.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># p is the exponent of the regularizing terms</span>
-<span class="c1"># The smaller p the more sensitive it is to noise</span>
-<span class="c1"># TSV = Total Squared Variation</span>
-<span class="k">def</span> <span class="nf">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calc_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tsv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the regularizer according to total squared variation</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">        p is the kind of norm to be used</span>
+<span class="sd">        tsv is the flag for total squared variation</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the regularizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">tsv</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;p value not set&quot;</span><span class="p">)</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="mi">0</span>
@@ -647,7 +655,7 @@ Actual: (-283386.93411007+533165.1782602723j)
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png" src="_images/73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png" />
+<img alt="_images/f0e4a890db2d07967541c43a7c0bc017845bec8c2d4250241268542840ffae43.png" src="_images/f0e4a890db2d07967541c43a7c0bc017845bec8c2d4250241268542840ffae43.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -676,7 +684,7 @@ Actual: (-283386.93411007+533165.1782602723j)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Empty: -0.0
-Noisy: -2108.9772836537513
+Noisy: -2085.895636430716
 Monotone: 0
 </pre></div>
 </div>
@@ -688,6 +696,13 @@ We calculate each point in the picture by doing <span class="math notranslate no
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_regularizer</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the gradient of the regularizer</span>
+<span class="sd">    Args:</span>
+<span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        the gradient of the regularizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">image_lshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">image_lshift</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_lshift</span><span class="p">[:,</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> 
@@ -724,19 +739,19 @@ We calculate each point in the picture by doing <span class="math notranslate no
  [0. 0. 0. ... 0. 0. 0.]
  [0. 0. 0. ... 0. 0. 0.]]
 Noisy:
- [[ 1.04025833  0.31293167 -1.48128372 ...  0.22462667  0.2264166
-   0.58445354]
- [-1.45402225  1.290966   -1.51713099 ...  1.15713575 -0.19833866
-  -0.09194965]
- [ 0.1087026   1.74525518 -1.26408352 ... -0.34713719 -0.77749415
-  -0.57635953]
+ [[ 0.31024625 -0.82884734  0.84366307 ... -0.9838602   0.16459416
+   0.76439521]
+ [ 0.72304173  2.12615464 -2.01887717 ...  0.99973533 -1.36640981
+  -0.29684048]
+ [-0.18336457 -1.41617957  1.03082246 ...  0.24955253  0.84538256
+   0.37409539]
  ...
- [ 1.18315853  0.50915739 -0.48980817 ... -1.33555771  2.27147516
-   0.3352341 ]
- [-1.47661333  0.64698704 -1.56710514 ...  0.77084388 -2.04752708
-  -0.40909334]
- [ 1.24388255 -1.59917979  1.76252233 ... -0.75868688  0.32312203
-   0.84747094]]
+ [-0.10084764  2.12827635  0.0752676  ...  0.49772384 -1.07664231
+   0.48078759]
+ [ 0.52796796  0.7246593  -0.53352637 ... -0.97497961  0.83028989
+  -0.19931468]
+ [-0.53188825 -1.02105322  0.19264842 ... -0.94077025 -0.7647433
+   0.86410304]]
 Monotone:
  [[0 0 0 ... 0 0 0]
  [0 0 0 ... 0 0 0]
@@ -788,7 +803,7 @@ Monotone:
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Intro and Setup</p>
+        <p class="prev-next-title">Intro and Setup Use Diff</p>
       </div>
     </a>
     <a class="right-next"
@@ -818,7 +833,7 @@ Monotone:
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background-on-fov-and-k-space">Background on FOV and k-space</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">Interpolation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-stuff-about-cublic-splines-get-permission-first">include stuff about cublic splines? Get permission first</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cubic-splines">Cubic Splines</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
@@ -836,7 +851,7 @@ Monotone:
   <div class="footer-item">
     
 <p class="component-author">
-By The Jupyter Book Community
+By Anthony Hsu
 </p>
 
   </div>

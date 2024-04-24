@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.8.31)  14 APR 2024 22:46
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.8.31)  19 APR 2024 09:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1722,97 +1722,351 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 
 ]
 Chapter 1.
-[3] [4
+[3] [4] [5] [6
 
 ]
 Chapter 2.
-[5] [6
-
-]
-Chapter 3.
-[7] [8]
-Chapter 4.
-[9
-
-]
+[7]
 File: dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png Grap
 hic file (type bmp)
 <dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png>
- [10] [11] [12]
+ [8] [9] [10]
 File: 50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png Grap
 hic file (type bmp)
 <50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png>
- [13]
-File: 73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png Grap
+ [11]
+File: e2b0653daddf75beac98569c0d92efbd943d58a36d9c49f04ddb54696a883d1b.png Grap
 hic file (type bmp)
-<73262e3d274e3f09353042637381612c5f91412919cb9f05389a04b61384ca3a.png>
- [14]
+<e2b0653daddf75beac98569c0d92efbd943d58a36d9c49f04ddb54696a883d1b.png>
+ [12]
 File: 6be4452fe7135bd154aa8e9b3b8b2f5a0a719dc140f6f685c13ea78a004b870f.png Grap
 hic file (type bmp)
 <6be4452fe7135bd154aa8e9b3b8b2f5a0a719dc140f6f685c13ea78a004b870f.png>
- [15] [16] [17] [18
+ [13] [14] [15] [16
 
 ]
-Chapter 5.
-[19]
+Chapter 3.
+[17] [18]
 File: 09be506f97fad65651b949fb269182d142b16cb4c9f2ecebe9fd3a98f4952fd3.png Grap
 hic file (type bmp)
 <09be506f97fad65651b949fb269182d142b16cb4c9f2ecebe9fd3a98f4952fd3.png>
- [20] [21]
-File: ac0e3ec4ed17e6365f3c514fc4b50c4c782435036edb7329ce4423b7fe126bc9.png Grap
+ [19]
+File: 1dd00fbabfbb43c71589bbf065cdc02aa1f7c0f6c330841d0e6a5fd17c5f983b.png Grap
 hic file (type bmp)
-<ac0e3ec4ed17e6365f3c514fc4b50c4c782435036edb7329ce4423b7fe126bc9.png>
- [22]
-File: 0690ec2331a658d0b67fbe8dfd12b689c4a77d197453822eb4d97429524d03b8.png Grap
+<1dd00fbabfbb43c71589bbf065cdc02aa1f7c0f6c330841d0e6a5fd17c5f983b.png>
+ [20]
+File: d8f67215dccd93521c67515253d1a19aacb77100ecb159b6b7ef7127923cfdf1.png Grap
 hic file (type bmp)
-<0690ec2331a658d0b67fbe8dfd12b689c4a77d197453822eb4d97429524d03b8.png>
- [23]
-File: cfa3b61e93225560bce871e78e23a5e09af6847eb65a3d21ec9b2dd9636920d3.png Grap
+<d8f67215dccd93521c67515253d1a19aacb77100ecb159b6b7ef7127923cfdf1.png>
+ [21]
+File: b3c632c5c2bcc01af811553b11bddb37a2ac5d4111960b6398860d3a0583a845.png Grap
 hic file (type bmp)
-<cfa3b61e93225560bce871e78e23a5e09af6847eb65a3d21ec9b2dd9636920d3.png>
-File: ea5d73a9a456e40d4b75383898865582bc1edcb20b451a927fe2fea33e65c355.png Grap
+<b3c632c5c2bcc01af811553b11bddb37a2ac5d4111960b6398860d3a0583a845.png>
+File: f3786860293cabae6164d4a17645dcf5df54dbe45cfb645074ed5f27eebb6d1b.png Grap
 hic file (type bmp)
-<ea5d73a9a456e40d4b75383898865582bc1edcb20b451a927fe2fea33e65c355.png>
- [24] [25] [26
+<f3786860293cabae6164d4a17645dcf5df54dbe45cfb645074ed5f27eebb6d1b.png>
+ [22] [23] [24
 
 ]
-Chapter 6.
-[27] [28]
+Chapter 4.
+[25] [26]
 File: 50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png Grap
 hic file (type bmp)
 <50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png>
-File: 140acf16b5b3e65a9da08d60982d6f98a5dfdb81a134393420c489c3b071a794.png Grap
+ [27]
+File: e662df381fa0c767051324f0addd23c85f1e65ff479aa4aa7b5a6e88c70b391d.png Grap
 hic file (type bmp)
-<140acf16b5b3e65a9da08d60982d6f98a5dfdb81a134393420c489c3b071a794.png>
- [29] [30]
-File: 40c73ef4ff914f319a1c172d64871a9423b259d2d88b1fc000cb3b76e8897447.png Grap
+<e662df381fa0c767051324f0addd23c85f1e65ff479aa4aa7b5a6e88c70b391d.png>
+ [28] [29] [30] [31]
+File: 9cb060127a661f09b503885d5baabee61b6b12a604a4983b6694cebfd147273f.png Grap
 hic file (type bmp)
-<40c73ef4ff914f319a1c172d64871a9423b259d2d88b1fc000cb3b76e8897447.png>
- [31]
-File: 9be258954c7ea249931137efd059cc2c351f3e7463876f4cca4282d2f0c136de.png Grap
-hic file (type bmp)
-<9be258954c7ea249931137efd059cc2c351f3e7463876f4cca4282d2f0c136de.png>
+<9cb060127a661f09b503885d5baabee61b6b12a604a4983b6694cebfd147273f.png>
  [32]
-File: fc08e6a8f5512daa0bbd5ea544b51054b7c9fd38f066d5fc509489e399a9229e.png Grap
+File: 46df12f467cddacf55c4c787ae5514a0fb1ff48ff0121687b6c80f7cb234c12d.png Grap
 hic file (type bmp)
-<fc08e6a8f5512daa0bbd5ea544b51054b7c9fd38f066d5fc509489e399a9229e.png>
+<46df12f467cddacf55c4c787ae5514a0fb1ff48ff0121687b6c80f7cb234c12d.png>
  [33] [34]
-Chapter 7.
-
-Overfull \vbox (4.35799pt too high) detected at line 1490
- []
-
+Chapter 5.
 [35
 
-]
-File: 1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png Grap
+] [36]
+File: 50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png Grap
 hic file (type bmp)
-<1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png>
- [36] [37]
-File: 1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png Grap
+<50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png>
+ [37]
+File: 50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png Grap
 hic file (type bmp)
-<1d40cec58b8e3879af820a6ff3a8c7619227971ad7c70e496c5d3000cce1fa41.png>
- (./book.ind)
+<50044725cf3b7bb9aba8413280e2b5fac297b8a84f56bbf478d426329bef7e14.png>
+ [38] [39]
+Underfull \vbox (badness 10000) detected at line 1997
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1997
+ []
+
+[40]
+! Dimension too large.
+\fb@put@frame ...p \ifdim \dimen@ >\ht \@tempboxa 
+                                                  \fb@putboxa #1\fb@afterfra...
+l.2088 \end{sphinxVerbatim}
+                           
+? 
+
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (0.78593pt too high) detected at line 2088
+ []
+
+[41]
+! Dimension too large.
+\fb@put@frame ...p \ifdim \dimen@ >\ht \@tempboxa 
+                                                  \fb@putboxa #1\fb@afterfra...
+l.2088 \end{sphinxVerbatim}
+                           
+? 
+
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[42]
+! Dimension too large.
+\fb@put@frame ...p \ifdim \dimen@ >\ht \@tempboxa 
+                                                  \fb@putboxa #1\fb@afterfra...
+l.2088 \end{sphinxVerbatim}
+                           
+? 
+
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[43]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[44]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[45]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[46]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (50.78596pt too high) detected at line 2088
+ []
+
+[47]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[48]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[49]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[50]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[51]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[52]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[53]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[54]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (61.78596pt too high) detected at line 2088
+ []
+
+[55]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[56]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (50.78596pt too high) detected at line 2088
+ []
+
+[57]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[58]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[59]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (61.78596pt too high) detected at line 2088
+ []
+
+[60]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[61]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[62]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (50.78596pt too high) detected at line 2088
+ []
+
+[63]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[64]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[65]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[66]
+Underfull \vbox (badness 10000) detected at line 2088
+ []
+
+
+Overfull \vbox (39.78596pt too high) detected at line 2088
+ []
+
+[67]
+File: 41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png Grap
+hic file (type bmp)
+<41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png>
+ [68]
+Chapter 6.
+[69
+
+] [70]
+Overfull \vbox (0.78593pt too high) detected at line 2344
+ []
+
+[71]
+Overfull \vbox (0.78593pt too high) detected at line 2409
+ []
+
+[72]
+Underfull \vbox (badness 10000) detected at line 2463
+ []
+
+[73]
+Overfull \vbox (0.78593pt too high) detected at line 2544
+ []
+
+[74] (./book.ind)
 The property list \polyglossia@langsetup contains the pairs (without outer
 braces):
 >  {latex/script}  =>  {latin}
@@ -1883,21 +2137,30 @@ The property list \__xpg_alias contains the pairs (without outer braces):
 >  {newzealand/target}  =>  {english}
 >  {newzealand/variant}  =>  {newzealand}
 >  {newzealand/options}  =>  {variant=newzealand}.
- [38] (./book.aux
+ [75] (./book.aux
 LaTeX Info: Redefining \rmfamily on input line 17.
 LaTeX Info: Redefining \sffamily on input line 17.
 LaTeX Info: Redefining \ttfamily on input line 17.
 )
-Package rerunfilecheck Info: File `book.out' has not changed.
-(rerunfilecheck)             Checksum: 88E56FEBD726912055BBC32523311E38;2026.
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `book.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `book.out':
+(rerunfilecheck)             Before: 1F164C13339AF2A6AA0E34EBE66CC7A2;2083
+(rerunfilecheck)             After:  FD72370D89B36071D66B7793FF29BDE7;2132.
  ) 
 Here is how much of TeX's memory you used:
- 43321 strings out of 476683
- 1007150 string characters out of 5804047
- 1931018 words of memory out of 5000000
- 62752 multiletter control sequences out of 15000+600000
- 517771 words of font info for 112 fonts, out of 8000000 for 9000
+ 43322 strings out of 476683
+ 1006684 string characters out of 5804047
+ 2988018 words of memory out of 5000000
+ 62753 multiletter control sequences out of 15000+600000
+ 517779 words of font info for 113 fonts, out of 8000000 for 9000
  1349 hyphenation exceptions out of 8191
- 99i,17n,115p,966b,2290s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,17n,115p,1706b,2292s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on book.pdf (42 pages).
+Output written on book.pdf (79 pages).
