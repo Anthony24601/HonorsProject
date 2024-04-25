@@ -386,7 +386,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-walkthrough">Demo Walkthrough</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-gradient-on-real-eht-data">Running gradient on Real EHT Data</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -479,17 +482,21 @@ document.write(`
 </div>
 </div>
 <p>Final Note: Why do we use 1e-6 and 1e-8.</p>
-<p>When we want to estimate our loss function we consider the equation below</p>
+<p>When we want to estimate our loss function using the method below.</p>
+<p>Consider the loss function f and we want to estimate it at point x as a finite difference. Additionally, let g be the numerical computation of f. Then we consider the analysis below</p>
 <div class="math notranslate nohighlight">
-\[\kappa(f'_h) = max_{\delta x} \frac{|\frac{f(x+\delta x + h) - f (x+\delta x)}{h} -f'(x)|}{|f'(x)|}|\frac{x}{\delta x}|\]</div>
+\[f'_h = max_{\Delta x} \frac{|\frac{g(x+\delta x + h) - g(x+\delta x)}{h} -f'(x)|}{|f'(x)|}|\frac{x}{\Delta x}|\]</div>
 <div class="math notranslate nohighlight">
-\[\sim \frac{|f(x+h) - f(x) -f'(x)h|}{\epsilon_{machine}h|f'(x)|}\]</div>
+\[\sim \frac{|g(x+h) - g(x) -f'(x)h|}{\epsilon_{machine}h|f'(x)|}\]</div>
 <div class="math notranslate nohighlight">
 \[\sim\frac{\epsilon_{machine}f +(\frac{fh^2}{L^2})}{\frac{\epsilon_{machine}hf}{L}}\]</div>
 <div class="math notranslate nohighlight">
 \[ = \frac{L}{h} + \frac{h}{\epsilon_{machine}L}\]</div>
-<p>Here, L is a characteristic scale of x and <span class="math notranslate nohighlight">\(\epsilon_{machine}\)</span> is the error of the machine. By minimizing <span class="math notranslate nohighlight">\(\kappa(f'_h)\)</span> with respect to h, we find that <span class="math notranslate nohighlight">\(h \sim \sqrt{\epsilon_{machine}}L\)</span>. With <span class="math notranslate nohighlight">\(L\sim 1\)</span>, <span class="math notranslate nohighlight">\(h \sim \sqrt{\epsilon_{machine}}\)</span>.</p>
-<p>This is because of the maximum precision for floats in python. Floats in Python use IEEE Double Precision format which gives allows for it to compare up to <span class="math notranslate nohighlight">\(10^{-16}\)</span> precision between two values. In forward and backward differences, the <span class="math notranslate nohighlight">\(h\)</span> value uses the square root of <span class="math notranslate nohighlight">\(10^{-16}\)</span> which is <span class="math notranslate nohighlight">\(10^{-8}\)</span>. In central differences, the <span class="math notranslate nohighlight">\(h\)</span> value uses a cubic root which means it uses roughly <span class="math notranslate nohighlight">\(10^{-6}\)</span></p>
+<p>Here, L is a characteristic scale of x and <span class="math notranslate nohighlight">\(\epsilon_{machine}\)</span> is the error of the machine. By minimizing <span class="math notranslate nohighlight">\(f'_h\)</span> with respect to h, we find that <span class="math notranslate nohighlight">\(h \sim \sqrt{\epsilon_{machine}}L\)</span>. With <span class="math notranslate nohighlight">\(L\sim 1\)</span>, <span class="math notranslate nohighlight">\(h \sim \sqrt{\epsilon_{machine}}\)</span>.</p>
+<p>Why don’t we use other values of h?</p>
+<p>We have to balance between two types of errors: The first being the error due to numerical errors within g. As h becomes two small, the error becomes bigger. The other error is from the higher order derivatives of the function f. As h grows larger, the higher order derivatives start to dominate the approximation.</p>
+<p>How does this connect to 1e-6 and 1e-8?</p>
+<p>Floats in Python use IEEE Double Precision format which gives allows for it to compare up to <span class="math notranslate nohighlight">\(10^{-16}\)</span> precision between two values. In forward and backward differences, the <span class="math notranslate nohighlight">\(h\)</span> value uses the square root of <span class="math notranslate nohighlight">\(10^{-16}\)</span> which is <span class="math notranslate nohighlight">\(10^{-8}\)</span>. In central differences, the <span class="math notranslate nohighlight">\(h\)</span> value uses a cubic root which means it uses roughly <span class="math notranslate nohighlight">\(10^{-6}\)</span></p>
 </section>
 <section id="demo-walkthrough">
 <h3>Demo Walkthrough<a class="headerlink" href="#demo-walkthrough" title="Permalink to this heading">#</a></h3>
@@ -526,7 +533,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/d9674ae5f642800311da9eb3afaba0a65549b44fe097977ea17042139f8e6743.png" src="_images/d9674ae5f642800311da9eb3afaba0a65549b44fe097977ea17042139f8e6743.png" />
+<img alt="_images/17251b2b70df783099ae13dcdf81c1525285be4c10274ffc24a63d20644a96d2.png" src="_images/17251b2b70df783099ae13dcdf81c1525285be4c10274ffc24a63d20644a96d2.png" />
 </div>
 </div>
 <p>Above is the image representation of the gradient, darker areas represent smaller gradients and lighter areas represent bigger gradients.</p>
@@ -538,6 +545,7 @@ document.write(`
 <p>Now that we have computed a gradient, we can now start doing gradient descent. Gradient Descent is an optimization algorithm for finding local minimum within a differentiable function. We can use this to find values of parameters that minimize some sort of cost function. Here, the parameters as simply each pixel in our image, and the cost functions that we are trying to minimize is the loss function.</p>
 <p>Heres how it works. We first calcualte the loss at the current position. The algorithm then iteratively calculates the next image by using the gradient at the current position. We scale the gradient so that we can obtain a loss less than the current loss and then subtract the scaled gradient from the image. This is called a single step. We subtract the gradient because we are looking to minimise the function rather than maximizing it.</p>
 <p>We take a bunch of these steps until we hit some stopping condition (here it is np.min(np.abs(grad)) <span class="math notranslate nohighlight">\(\leq\)</span> 0.0000001).</p>
+<p>The choosing of step size (the scaling of the gradient) is important because if not chosen properly, it will lead to this pattern called zig-zagging. This would then cause the program to reach the minimum slower than it would have by going on a straight path.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">coeffs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">),</span> <span class="n">stopper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dirty</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -557,6 +565,7 @@ document.write(`
     <span class="n">image_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Uses copy of the image due to lists being mutable in python</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">grad</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">losses_arr</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># Can also use max here, min just makes it finish quicker</span>
     <span class="k">while</span> <span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">0.00001</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="mi">10000000</span> <span class="c1"># Initial Step size which resets each iteration</span>
@@ -579,8 +588,14 @@ document.write(`
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">stopper</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">stopper</span><span class="p">:</span> <span class="c1"># Hard stop here for notebook purposes</span>
-                <span class="k">return</span> <span class="n">image_copy</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loss:&quot;</span><span class="p">,</span><span class="n">new_loss</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="n">losses_arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">new_loss</span><span class="p">))</span>
+
+    <span class="n">time_step</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">losses_arr</span><span class="p">))]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_step</span><span class="p">,</span> <span class="n">losses_arr</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Depiction of log(loss) vs time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">image_copy</span>
 </pre></div>
 </div>
@@ -590,130 +605,38 @@ document.write(`
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>reconstructed_img = gradient_descent(emp, data_list, coords)
 </pre></div>
 </div>
-<p>You will notices that the loss decreases very rapidly</p>
+<p>You will notices that the loss decreases very rapidly towards zero</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reconstructed_img</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">emp</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stopper</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reconstructed_img</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Reconstructed Image&quot;</span><span class="p">)</span>
-
-<span class="c1"># Use a graph here</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">do_sample</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">reconstructed_img</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">emp</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stopper</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 35420.13975851561
+<img alt="_images/c50333b24d4c99dd8b5c092a7a5ef5dc757e7e457b820fae81a82cdb88cad12e.png" src="_images/c50333b24d4c99dd8b5c092a7a5ef5dc757e7e457b820fae81a82cdb88cad12e.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reconstructed_img</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Reconstructed Image&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 33640.77637406398
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Reconstructed Image&#39;)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 8531.998012070018
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 3251.2410117778313
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 2824.1936486905374
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 765.2816253235176
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 308.95065648196766
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 239.55983985001913
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 69.18375578154591
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 29.29234225959815
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 20.254586805231373
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 6.062104548574277
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 2.5356544925081406
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss: 1.4679674461828094
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">reconstructed_img</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">emp</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stopper</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reconstructed_img</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
-
-<span class="nn">Cell In[5], line 33,</span> in <span class="ni">gradient_descent</span><span class="nt">(image, data_list, coords, coeffs, FOV, stopper, dirty)</span>
-<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="k">while</span> <span class="n">new_loss</span> <span class="o">&gt;</span> <span class="n">prev_loss</span><span class="p">:</span> <span class="c1"># Only run when new_loss &gt; prev_loss</span>
-<span class="g g-Whitespace">     </span><span class="mi">32</span>     <span class="n">new_image</span> <span class="o">=</span> <span class="n">image_copy</span> <span class="o">-</span> <span class="n">t</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span>
-<span class="ne">---&gt; </span><span class="mi">33</span>     <span class="n">new_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">new_image</span><span class="p">,</span> <span class="n">data_list</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="o">=</span><span class="n">FOV</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span>     <span class="n">t</span> <span class="o">/=</span> <span class="mi">2</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="n">image_copy</span> <span class="o">-=</span> <span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">grad</span><span class="o">.</span><span class="n">real</span> <span class="c1"># Multiply by 2 to undo last divide in the while loop</span>
-
-<span class="nn">File /var/folders/_b/trlmhkgj5xq968yccj4vtg1c0000gn/T/ipykernel_27124/353158488.py:14,</span> in <span class="ni">loss</span><span class="nt">(image, data_list, coords, p, reg_weight, FOV)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span><span class="sd"> calculates the loss of an image compared to the data given</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span><span class="sd"> Args:</span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span><span class="sd">     a loss value</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="n">error_sum</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="ne">---&gt; </span><span class="mi">14</span> <span class="n">vis_images</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)):</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span>     <span class="n">vis_data</span> <span class="o">=</span> <span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">phase</span><span class="p">))</span>
-
-<span class="nn">File /var/folders/_b/trlmhkgj5xq968yccj4vtg1c0000gn/T/ipykernel_27124/1553311203.py:17,</span> in <span class="ni">interpolate</span><span class="nt">(image, coords, FOV)</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">k_FOV</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">FOV</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="n">kx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k_FOV</span><span class="o">*</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-<span class="ne">---&gt; </span><span class="mi">17</span> <span class="n">ky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">k_FOV</span><span class="o">*</span><span class="n">ft_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="n">interp_real</span> <span class="o">=</span> <span class="n">RegularGridInterpolator</span><span class="p">((</span><span class="n">kx</span><span class="p">,</span> <span class="n">ky</span><span class="p">),</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="n">interp_imag</span> <span class="o">=</span> <span class="n">RegularGridInterpolator</span><span class="p">((</span><span class="n">kx</span><span class="p">,</span> <span class="n">ky</span><span class="p">),</span> <span class="n">ft_image</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
-
-<span class="nn">File /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/numpy/fft/helper.py:73,</span> in <span class="ni">fftshift</span><span class="nt">(x, axes)</span>
-<span class="g g-Whitespace">     </span><span class="mi">70</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">71</span>     <span class="n">shift</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">]</span>
-<span class="ne">---&gt; </span><span class="mi">73</span> <span class="k">return</span> <span class="n">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
-
-<span class="nn">File /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/numpy/core/numeric.py:1211,</span> in <span class="ni">roll</span><span class="nt">(a, shift, axis)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1208</span>     <span class="k">return</span> <span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1210</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1211</span>     <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">allow_duplicate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1212</span>     <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1213</span>     <span class="k">if</span> <span class="n">broadcasted</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-
-<span class="nn">File /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/numpy/core/numeric.py:1380,</span> in <span class="ni">normalize_axis_tuple</span><span class="nt">(axis, ndim, argname, allow_duplicate)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1378</span>         <span class="k">pass</span>
-<span class="g g-Whitespace">   </span><span class="mi">1379</span> <span class="c1"># Going via an iterator directly is slower than via list comprehension.</span>
-<span class="ne">-&gt; </span><span class="mi">1380</span> <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">argname</span><span class="p">)</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">])</span>
-<span class="g g-Whitespace">   </span><span class="mi">1381</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicate</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1382</span>     <span class="k">if</span> <span class="n">argname</span><span class="p">:</span>
-
-<span class="nn">File /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/numpy/core/numeric.py:1380,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1378</span>         <span class="k">pass</span>
-<span class="g g-Whitespace">   </span><span class="mi">1379</span> <span class="c1"># Going via an iterator directly is slower than via list comprehension.</span>
-<span class="ne">-&gt; </span><span class="mi">1380</span> <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">argname</span><span class="p">)</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">])</span>
-<span class="g g-Whitespace">   </span><span class="mi">1381</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicate</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1382</span>     <span class="k">if</span> <span class="n">argname</span><span class="p">:</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
+<img alt="_images/b416e09509141e859e9fb1161ddc1a61d5b31d9c9a871e7c9b66a1260266cc4c.png" src="_images/b416e09509141e859e9fb1161ddc1a61d5b31d9c9a871e7c9b66a1260266cc4c.png" />
 </div>
 </div>
 <p>After another 20 iterations, you should see this:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reconstructed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;./images/reconstructed_img.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reconstructed_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/reconstructed_img_prev.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reconstructed_img</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
@@ -746,8 +669,31 @@ document.write(`
 </div>
 </div>
 <p>As you can see here, the reconstructed image doesn’t replicate the original image directly but it will still reconstruct some of the big important features that EHT Analysis uses. Here we can see the general shape of the reconstructed image matches up with the original image</p>
-<p>zig zagging of gradient descent</p>
-<p>Run gradient on actual data for comparison with dirty kernel</p>
+<section id="running-gradient-on-real-eht-data">
+<h3>Running gradient on Real EHT Data<a class="headerlink" href="#running-gradient-on-real-eht-data" title="Permalink to this heading">#</a></h3>
+<p>Here is code to run this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>df = read_data(&quot;./data/SR1_M87_2017_095_hi_hops_netcal_StokesI.csv&quot;)
+coords, data_list = process_data(df)
+x = gradient_finite_differences(data_list, coords, emp)
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/real_gradient.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/c07baec3717009340b7e2721df3ed9454be1b90bbac6c0738559002c3bbca195.png" src="_images/c07baec3717009340b7e2721df3ed9454be1b90bbac6c0738559002c3bbca195.png" />
+</div>
+</div>
+</section>
 </section>
 </section>
 
@@ -821,7 +767,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-walkthrough">Demo Walkthrough</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-gradient-on-real-eht-data">Running gradient on Real EHT Data</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

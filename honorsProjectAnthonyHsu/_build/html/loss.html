@@ -383,7 +383,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-term-calculation">Data Term calculation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#furthermore-into-the-data">Furthermore into the data</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-one-gain">Method One: Gain</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-cosher-phase">Method Two: Cosher Phase</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-closure-phase">Method Two: Closure Phase</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-function">Testing the function</a></li>
@@ -411,8 +411,8 @@ document.write(`
 <p>Let <span class="math notranslate nohighlight">\(I(x,y)\)</span> be the image and we transform it into <span class="math notranslate nohighlight">\(\hat{I} (x,y)\)</span> by using fourier transfroms described in the the interpolate section of the previous notebook.</p>
 <p>Next we compare each interpolated point with its data term counterpart and get the equation for loss to be:</p>
 <div class="math notranslate nohighlight">
-\[J = \sum(\frac{|\hat{I} - D|^2}{\sigma^2})\]</div>
-<p><span class="math notranslate nohighlight">\(\sigma\)</span> here is the error for each data point.</p>
+\[J = \sum_{i}\frac{|\hat{I}(u_i,v_i) - D_i|^2}{\sigma_i^2}\]</div>
+<p><span class="math notranslate nohighlight">\(\sigma\)</span> here is the error for the <span class="math notranslate nohighlight">\(i^{th}\)</span> data point.</p>
 <p>Finally, we add the regularizer to the loss using the method in the previous notebook.</p>
 <section id="data-term-calculation">
 <h2>Data Term calculation<a class="headerlink" href="#data-term-calculation" title="Permalink to this heading">#</a></h2>
@@ -456,17 +456,18 @@ document.write(`
 <h3>Method One: Gain<a class="headerlink" href="#method-one-gain" title="Permalink to this heading">#</a></h3>
 <p>We add a new function called the Gain which represents the telescoping errors. It is a smooth function in time that has a phase and amplitude. We multiply it with the data term to result in:</p>
 <div class="math notranslate nohighlight">
-\[J = \sum(\frac{|\hat{I} - G D|^2}{\sigma^2})\]</div>
+\[J = \sum_{i,j}(\frac{|\hat{I} - G D|^2}{\sigma^2})\]</div>
 <p>Now when we try to minimize the image, we are also trying to minimize G.</p>
 </section>
-<section id="method-two-cosher-phase">
-<h3>Method Two: Cosher Phase<a class="headerlink" href="#method-two-cosher-phase" title="Permalink to this heading">#</a></h3>
-<p>The other way is to take into the account the Cosher Phase.</p>
+<section id="method-two-closure-phase">
+<h3>Method Two: Closure Phase<a class="headerlink" href="#method-two-closure-phase" title="Permalink to this heading">#</a></h3>
+<p>The other way is to take into the account the Closure Phase.</p>
 <p>Using three telescopes we get:</p>
 <div class="math notranslate nohighlight">
-\[ \sum (\frac{|\phi_{1,2} + \phi_{2,3} + \phi_{3,1} - \phi_{\hat{I}}|^2}{\sigma^2})\]</div>
-<p><span class="math notranslate nohighlight">\(\phi_{1,2} + \phi_{2,3} + \phi_{3,1}\)</span> is called the Cosher Phase <span class="math notranslate nohighlight">\(CP\)</span> which is independent of the telescope error and is taken from the data. <span class="math notranslate nohighlight">\(\phi_{\hat{I}}\)</span> is a Cosher Phase computed from the image.</p>
+\[ \sum_{i,j,k} (\frac{|\phi_{i,j} + \phi_{j,k} + \phi_{k,i} - \phi_{\hat{I}}|^2}{\sigma^2}) \text{ where }i \neq j \neq k\]</div>
+<p><span class="math notranslate nohighlight">\(\phi_{i,j} + \phi_{j,k} + \phi_{k,i}\)</span> is called the Closure Phase <span class="math notranslate nohighlight">\(CP\)</span> which is independent of the telescope error and is taken from the data. <span class="math notranslate nohighlight">\(\phi_{\hat{I}}\)</span> is a Closure Phase computed from the image.</p>
 <p>In practice, these are the two major methods in order to fit the image to the data.</p>
+<p>For the purposes of this notebook however we will be simplifying the problem and setting these visibilities to one.</p>
 </section>
 </section>
 <section id="testing-the-function">
@@ -519,31 +520,31 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[u: 0, v: 0],
- [u: 2, v: 3],
- [u: 3, v: 2],
- [u: -1, v: -3],
- [u: 2, v: -1],
- [u: -2, v: -3],
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[u: 0, v: 4],
+ [u: 1, v: -2],
+ [u: 2, v: -4],
  [u: -4, v: 0],
- [u: -2, v: 0],
- [u: -3, v: 3],
- [u: 4, v: 2],
- [u: -2, v: -3],
- [u: 0, v: 0],
- [u: 0, v: 1],
- [u: 1, v: 0],
- [u: 4, v: 0],
- [u: -4, v: 4],
- [u: -2, v: 1],
- [u: -4, v: -2],
- [u: 4, v: 2],
+ [u: -3, v: 0],
+ [u: -3, v: -2],
+ [u: 2, v: -1],
+ [u: 3, v: 4],
  [u: -3, v: 2],
- [u: -1, v: 1],
+ [u: 2, v: 0],
+ [u: -2, v: -3],
+ [u: 0, v: -1],
+ [u: 3, v: 1],
+ [u: 2, v: 1],
+ [u: 1, v: 4],
+ [u: 3, v: 2],
+ [u: 0, v: 3],
+ [u: 1, v: 0],
+ [u: 0, v: 4],
+ [u: 0, v: 2],
+ [u: 1, v: -3],
  [u: -3, v: -1],
- [u: 0, v: 0],
- [u: 0, v: -3],
- [u: 3, v: 4]]
+ [u: -3, v: 0],
+ [u: 1, v: -3],
+ [u: 0, v: 3]]
 </pre></div>
 </div>
 </div>
@@ -585,7 +586,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/f640f3462fca5d5b339dc7a6c7bea5d0ae3f6bd4e572619f9d5bb2520562a74d.png" src="_images/f640f3462fca5d5b339dc7a6c7bea5d0ae3f6bd4e572619f9d5bb2520562a74d.png" />
+<img alt="_images/3a65b20ba4203a92bbc60a1516d0f2ccb77955174ec2f5e48444d427122ddd6a.png" src="_images/3a65b20ba4203a92bbc60a1516d0f2ccb77955174ec2f5e48444d427122ddd6a.png" />
 </div>
 </div>
 <p>The dark spots in this picture are low points while the yellow spots are high points. Here we see that there are a few spots where the image produces low loss. If ran again, we will get differing behaviors</p>
@@ -597,7 +598,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c51be93e22e796bf4d151ae33faa21ea5584539082615278242eab05818a1772.png" src="_images/c51be93e22e796bf4d151ae33faa21ea5584539082615278242eab05818a1772.png" />
+<img alt="_images/e9c5e9214f420d1d794c7406419bd11b1c027f363913f2e424118a193333e14f.png" src="_images/e9c5e9214f420d1d794c7406419bd11b1c027f363913f2e424118a193333e14f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -608,7 +609,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/da828bdac2ffba4516ec00904f005064e9f7723c738b3eaa455cf9e31e7fc74d.png" src="_images/da828bdac2ffba4516ec00904f005064e9f7723c738b3eaa455cf9e31e7fc74d.png" />
+<img alt="_images/0f110730a2774adca1e768c053961bd3a2b5deb7b8e68cab5c16631c2cd4270b.png" src="_images/0f110730a2774adca1e768c053961bd3a2b5deb7b8e68cab5c16631c2cd4270b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -619,7 +620,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/63c25bc6246d887f1e36363979ee1c6ff23e795bc4d3553493cd3c50925618a0.png" src="_images/63c25bc6246d887f1e36363979ee1c6ff23e795bc4d3553493cd3c50925618a0.png" />
+<img alt="_images/1dbb0c887841f5ca8123260d333077f0e9dee0ec0e50610c0b886360cc1cad90.png" src="_images/1dbb0c887841f5ca8123260d333077f0e9dee0ec0e50610c0b886360cc1cad90.png" />
 </div>
 </div>
 <p>In all four of these trials (and other reruns that we test), we generally see dark spots in the centers suggesting that the best area to put the ring is centered in the middle of the image</p>
@@ -693,7 +694,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-term-calculation">Data Term calculation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#furthermore-into-the-data">Furthermore into the data</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-one-gain">Method One: Gain</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-cosher-phase">Method Two: Cosher Phase</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-two-closure-phase">Method Two: Closure Phase</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-function">Testing the function</a></li>

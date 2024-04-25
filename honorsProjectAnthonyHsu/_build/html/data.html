@@ -414,7 +414,7 @@ document.write(`
 </div>
 <section id="data-details">
 <h2>Data Details<a class="headerlink" href="#data-details" title="Permalink to this heading">#</a></h2>
-<p>In order to capture the image and data of a black hole, we would need a telescope the size of the earth! Although we don’t have one of those, we are still able to obtain some data about black holes by using a technology called Very Long Baseline Interferometry (VLBI). This involves having many telescope around the world. This in tern creates a virtual telescope and allows us to capture the image of the black hole’s silouette.</p>
+<p>In order to capture the image and data of a black hole, we would need a telescope the size of the earth! Although we don’t have one of those, the Event Horizon Telescope were still able to obtain some data about black holes by using a technology called Very Long Baseline Interferometry (VLBI). This involves having many telescope around the world. This in tern creates a virtual telescope and allows us to capture the image of the black hole’s silouette. They are the only ones in the world to do so!</p>
 <p>The data set from EHT (The Event Horizon Telescope) and from the HOPS pipeline (software from MIT), comes in multiple sets. From one data collection, we are given a hi band and low band sets, and here’s why.</p>
 <p>Suppose that the sky signal is some radio wave <span class="math notranslate nohighlight">\(Sky = \epsilon \sin(\omega t)\)</span>. The signal however is extremely small which make it hard to detect. In order to pick out this signal on earth, we use a local oscillator which generates another wave (i.e. <span class="math notranslate nohighlight">\(LO = A \sin(\omega't)\)</span>) where A is some amplitude. Once these two signals are multiplied together, we get something like so: <span class="math notranslate nohighlight">\(Sky \times LO = A \epsilon \sin(\omega t) \times \sin(\omega' t) = A \epsilon {\sin[(\omega + \omega')t] + sin [(\omega - \omega')t]}\)</span>.</p>
 <p>Here we have <span class="math notranslate nohighlight">\(A \epsilon\)</span> be an amplitude such that the signals are big enough for our instruments to detect.
@@ -658,6 +658,57 @@ The <span class="math notranslate nohighlight">\(\omega + \omega'\)</span> and <
 </table>
 <p>6458 rows × 8 columns</p>
 </div></div></div>
+</div>
+<p>Below is EHT’s reconstruction of the data above</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;images/3597_blur_avg.txt&quot;</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">180</span><span class="p">,</span><span class="mi">180</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+    <span class="n">coord</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="mi">10000000000</span><span class="p">)</span>
+    <span class="n">image</span><span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">90</span><span class="p">][</span><span class="n">y</span><span class="o">+</span><span class="mi">90</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 179.5, 179.5, -0.5)
+</pre></div>
+</div>
+<img alt="_images/dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png" src="_images/dce7dafd214477f1739ab7335fe133516148f92841137ae0ca457ded5c0e1c46.png" />
+</div>
+</div>
+<p>And here is what the data looks like in the Fourier Domain</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FOV</span><span class="o">=</span><span class="mi">180</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">uas</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">rad</span><span class="p">)</span>
+<span class="n">kx_1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">FOV</span>
+
+<span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">u</span><span class="o">/</span><span class="n">kx_1</span><span class="p">))</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">v</span><span class="o">/</span><span class="n">kx_1</span><span class="o">+</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="n">ft_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-7.905869842587146, 7.905840800308392, 84.91551277675727, 91.50982392796048)
+</pre></div>
+</div>
+<img alt="_images/6180d8378b8a9d445c9811f908bbd473af67c24a2105495b8a533897fde6d3d1.png" src="_images/6180d8378b8a9d445c9811f908bbd473af67c24a2105495b8a533897fde6d3d1.png" />
+</div>
 </div>
 </section>
 </section>
