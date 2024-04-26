@@ -158,14 +158,8 @@ const thebe_selector_output = ".output, .cell_output"
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
+    <p class="title logo__title">Exploring Gradient Descent On Image Reconstruction with EHT data</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -533,7 +527,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/17251b2b70df783099ae13dcdf81c1525285be4c10274ffc24a63d20644a96d2.png" src="_images/17251b2b70df783099ae13dcdf81c1525285be4c10274ffc24a63d20644a96d2.png" />
+<img alt="_images/db8068e435acf0cf3b585895bfb27709117b21b6cb45eaa2ab388ca04b4c5b5d.png" src="_images/db8068e435acf0cf3b585895bfb27709117b21b6cb45eaa2ab388ca04b4c5b5d.png" />
 </div>
 </div>
 <p>Above is the image representation of the gradient, darker areas represent smaller gradients and lighter areas represent bigger gradients.</p>
@@ -594,7 +588,10 @@ document.write(`
     <span class="n">time_step</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">losses_arr</span><span class="p">))]</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_step</span><span class="p">,</span> <span class="n">losses_arr</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Depiction of log(loss) vs time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;ln(loss) vs time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;time t&quot;</span><span class="p">)</span>
+
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">image_copy</span>
 </pre></div>
@@ -614,7 +611,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c50333b24d4c99dd8b5c092a7a5ef5dc757e7e457b820fae81a82cdb88cad12e.png" src="_images/c50333b24d4c99dd8b5c092a7a5ef5dc757e7e457b820fae81a82cdb88cad12e.png" />
+<img alt="_images/1903f73ade21d3703a3d6e56d2b4c11570cb3a9fc23ed28197805dc5ee5f6e55.png" src="_images/1903f73ade21d3703a3d6e56d2b4c11570cb3a9fc23ed28197805dc5ee5f6e55.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -630,7 +627,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Reconstructed Image&#39;)
 </pre></div>
 </div>
-<img alt="_images/b416e09509141e859e9fb1161ddc1a61d5b31d9c9a871e7c9b66a1260266cc4c.png" src="_images/b416e09509141e859e9fb1161ddc1a61d5b31d9c9a871e7c9b66a1260266cc4c.png" />
+<img alt="_images/eb4c241b7369fc365794817315e1f01ddb414c676a874941007bc6778019a26f.png" src="_images/eb4c241b7369fc365794817315e1f01ddb414c676a874941007bc6778019a26f.png" />
 </div>
 </div>
 <p>After another 20 iterations, you should see this:</p>

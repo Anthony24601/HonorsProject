@@ -9,6 +9,5 @@ Interpolation schemes play a pivotal role in connecting the dots between sparse 
 
 Finally, this notebook focuses on studying two distinct methods for computing gradients: finite differences and "dirtying the image." By evaluating their efficiency and accuracy, we hope to provide insights into selecting suitable gradient calculation methods for image reconstruction tasks. Additionally we attempt to combine all of these topics and perform gradient descent on sample test images.
 
-```
-{tableofcontents}
+```{tableofcontents}
 ```

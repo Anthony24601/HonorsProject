@@ -155,14 +155,8 @@ const thebe_selector_output = ".output, .cell_output"
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
+    <p class="title logo__title">Exploring Gradient Descent On Image Reconstruction with EHT data</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -398,12 +392,17 @@ The Event Horizon Telescope (EHT) has revolutionized our understanding of black 
 This Juypter Book delves into the process of reconstructing images while showcasing images from EHT data. We investigate some key components within this process such as interpolation, calculating loss, and different gradient calculation methods.</p>
 <p>Interpolation schemes play a pivotal role in connecting the dots between sparse observational data and reconstructing an image. It does so by estimating unknown data that fall in between existing, know data points. By studying how the real domain relates to the fourier domain, we can understand what factors can go into recreating a high-resolution image. Loss functions are a important part of the optimization process. This is because they quantify the difference between a reconstructed image and the real image. In order to do so we must understand how the data’s peculiarities affects the loss function and it’s regularization.</p>
 <p>Finally, this notebook focuses on studying two distinct methods for computing gradients: finite differences and “dirtying the image.” By evaluating their efficiency and accuracy, we hope to provide insights into selecting suitable gradient calculation methods for image reconstruction tasks. Additionally we attempt to combine all of these topics and perform gradient descent on sample test images.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">tableofcontents</span><span class="p">}</span>
-</pre></div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Intro and Setup Use Diff</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpolation.html">Interpolation and Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="finite_gradient.html">Gradient Calculations: Finite Differences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dirty_gradient.html">Gradient Calculations: “Dirtying” the Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility.html">Utility Appendix</a></li>
+</ul>
 </div>
 </section>
-<div class="toctree-wrapper compound">
-</div>
 </section>
 
     <script type="text/x-thebe-config">

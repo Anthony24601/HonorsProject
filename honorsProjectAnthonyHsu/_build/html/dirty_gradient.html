@@ -158,14 +158,8 @@ const thebe_selector_output = ".output, .cell_output"
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
+    <p class="title logo__title">Exploring Gradient Descent On Image Reconstruction with EHT data</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -714,21 +708,21 @@ $<span class="math notranslate nohighlight">\(DK(u,v|u',v') = \sum_a \frac{1}{\s
 </div>
 </div>
 </div>
-<p>Below is what the gradient looks like after running the dirty kernel code. What is remarkable is its similarity to the gradient calculated inthe finite differences notebook in a fraction of the time. I am using a 2021 MacBook Pro with an M1 chip and the dirty kernel code took 2.5 seconds while the finite differences code took 34.4 seconds.</p>
+<p>Below is what the gradient looks like after running the dirty kernel code. What is remarkable is its similarity to the gradient calculated in the finite differences notebook in a fraction of the time. I am using a 2021 MacBook Pro with an M1 chip and the dirty kernel code took 2.5 seconds while the finite differences code took 34.4 seconds.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">DO</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;coeff = 1/1/FOV&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;coeff = FOV&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;coeff = 1/1/FOV&#39;)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;coeff = FOV&#39;)
 </pre></div>
 </div>
-<img alt="_images/41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png" src="_images/41a24ec3646ef5484c6ef1ec8c102dffa9c0d4ba945ae45ebc84fdb35557172d.png" />
+<img alt="_images/72a868abe5d9f0a860814df0f5f6d8831975213a675c42ec32baa48211787863.png" src="_images/72a868abe5d9f0a860814df0f5f6d8831975213a675c42ec32baa48211787863.png" />
 </div>
 </div>
 </section>

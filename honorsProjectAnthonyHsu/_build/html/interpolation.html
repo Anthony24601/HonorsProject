@@ -158,14 +158,8 @@ const thebe_selector_output = ".output, .cell_output"
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/logo.png" class="logo__image only-light" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Exploring Gradient Descent On Image Reconstruction with EHT data - Home"/>`);</script>
   
+    <p class="title logo__title">Exploring Gradient Descent On Image Reconstruction with EHT data</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -410,24 +404,27 @@ document.write(`
 for gradient descent.</p>
 <section id="background-on-fov-and-k-space">
 <h2>Background on FOV and k-space<a class="headerlink" href="#background-on-fov-and-k-space" title="Permalink to this heading">#</a></h2>
-<p>FOV stands for Field of view and it refers to the distance over which an image is acquired or displayed. These images are usually captured by some sort of signal processing like telescopes and MRIs. The FOV and pixel width determine the number of units in the fourier domain that must be obtained in order to reconstruct an image.</p>
-<p>For the sakes of this research and example, FOV<sub>x</sub> = FOV<sub>y</sub> = FOV and <span class="math notranslate nohighlight">\(\Delta x = \Delta y = \Delta w\)</span>. Where w is the pixel width.</p>
-<p>The Fourier projection of spatial frequencies all follow a similar pattern. Instead of regular sine waves, we see complex exponentials
-, cos n <span class="math notranslate nohighlight">\(\omega\)</span> t + i sin n <span class="math notranslate nohighlight">\(\omega\)</span> t. Each pair of samples lines differ by exactly 1 cycle over the FOV. This means that <span class="math notranslate nohighlight">\(\Delta k = k_{n+1} - k_n = \frac{n+1}{FOV}-\frac{n}{FOV} = \frac{1}{FOV}\)</span></p>
+<p>FOV stands for Field Of View and it refers to the distance over which an image is acquired or displayed. These images are usually captured by some sort of signal processing like telescopes and MRIs. The number of pixels determine the number of units in the Fourier domain that must be obtained in order to reconstruct an image.</p>
+<p>For the sakes of this research and example, FOV<sub>x</sub> = FOV<sub>y</sub> = FOV and k is the wavenumber which represents the number of wave cycles per unit length. Lets find the value of k in terms of FOV.</p>
+<p>In these notebooks we are using discrete Fourier Transform in order to convert from real space to the Fourier domain. We are thinking of the FOV by FOV as a 2-dimensional torus where everything is periodic on it. The Fourier Transform then performs a constant function on the torus, the lowest harmonic would be related to sin or cos with the lowest possible frequency so that it is still periodically on the torus. When chooseing a k, if k is too small, then there will be less than one wavelength along the torus.</p>
+<p>Here we will define the Fourier transform to be</p>
+<div class="math notranslate nohighlight">
+\[\int_0^wf(x)e^{2\pi i \Delta k x}\]</div>
+<p>Ideally, we would like w to be the period of the smallest harmonic. Thus we look at <span class="math notranslate nohighlight">\(\sin 2\pi \Delta k x\)</span> harmonics. As x goes from 0 to FOV, we want to end back at where we started. This means that we want <span class="math notranslate nohighlight">\( 2\pi \Delta k FOV = 2\pi\)</span>. Thus <span class="math notranslate nohighlight">\(\Delta k = \frac{1}{FOV}\)</span>.</p>
 </section>
 <section id="interpolation">
 <h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this heading">#</a></h2>
-<p>In this notebook, we have an image that is being linearly transformed using fourier transforms. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into fourier space) and the data obtained by the telescopes (which are in the spectral or fourier domain.)</p>
+<p>In this notebook, we have an image that is being linearly transformed using Fourier transforms. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into Fourier space) and the data obtained by the telescopes (which are in the spectral or Fourier domain.)</p>
 <p>When doing this transformation, we obtain a grid of points extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Instead, we must interpolate or estimate the values of the data points using existing known points in our grid.</p>
-<p>Furthermore, in order to translate correctly from image space to fourier space, we need to multiply the grids (kx and ky) by k_FOV. The calculation for this is explained above.</p>
-<p>It is important to note that the more grid points we have, the bigger the image. Thus the size of our Fourier Domain is the Number of pixels of the image by k_FOV. If our FOV is very small, then the width of the fourier grid becomes large.</p>
+<p>Furthermore, in order to translate correctly from image space to Fourier space, we need to multiply the grids (kx and ky) by k_FOV. The calculation for this is explained above.</p>
+<p>It is important to note that the more grid points we have, the bigger the image. Thus the size of our Fourier Domain is the Number of pixels of the image by k_FOV. If our FOV is very small, then the width of the Fourier grid becomes large.</p>
 <p>Next we want to interpolate the complex value at each coordinate. RegularGridInterpolator however cannot interpolate complex numbers so we interpolate the real and imaginary parts separately and then combined them for the final result.</p>
 <p>Finally, we use a linear method for interpolation due to it’s local interpolation scheme. The other schemes that RegularGridInterpolator offers uses a C^2-smooth split which is a non-local scheme. Since we wanted to optimize the computation time, we chose the linear method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">FOV</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Interpolates the values of each coordinate in coords in the fourier domain of image</span>
+<span class="sd">    Interpolates the values of each coordinate in coords in the Fourier domain of image</span>
 <span class="sd">    Args:</span>
 <span class="sd">        image is a 80x80 pixel image that represents our reconstructed image</span>
 <span class="sd">        coords is a list of u,v coordinates that we obtained from our data</span>
@@ -473,7 +470,7 @@ Expected: 2.5, Actual: [2.5]
 </div>
 </div>
 </div>
-<p>Now, here is a test on a fourier transformed image</p>
+<p>Now, here is a test on a Fourier transformed image</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;images/interpolate_test.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
@@ -571,7 +568,10 @@ Actual: (-283386.93411007+533165.1782602723j)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9.99 4.995 -1.0058598083263428 -1.0062387310745087
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9.99
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 4.995 -1.0058598083263428 -1.0062387310745087
 9.991 4.9955 -1.0052755185370548 -1.0056188621460636
 9.992 4.996 -1.004690839850659 -1.0049981027528014
 9.993 4.9965 -1.0041057771382442 -1.0043764531360648
@@ -655,7 +655,7 @@ Actual: (-283386.93411007+533165.1782602723j)
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 79.5, 79.5, -0.5)
 </pre></div>
 </div>
-<img alt="_images/ba63c90bd240db0ba21ba10dcc10ee10be3c5919da79e6cfc52d7dc290f41670.png" src="_images/ba63c90bd240db0ba21ba10dcc10ee10be3c5919da79e6cfc52d7dc290f41670.png" />
+<img alt="_images/acbb67e5f257ae676440a13493080ef1b017b58de97175bd7c4333ab7870f4d5.png" src="_images/acbb67e5f257ae676440a13493080ef1b017b58de97175bd7c4333ab7870f4d5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -684,7 +684,7 @@ Actual: (-283386.93411007+533165.1782602723j)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Empty: -0.0
-Noisy: -2140.468135105265
+Noisy: -2046.5990912994373
 Monotone: 0
 </pre></div>
 </div>
@@ -739,19 +739,19 @@ We calculate each point in the picture by doing <span class="math notranslate no
  [0. 0. 0. ... 0. 0. 0.]
  [0. 0. 0. ... 0. 0. 0.]]
 Noisy:
- [[ 0.97013928  1.66398624  0.21048698 ...  0.91672626  1.1290736
-   0.40504894]
- [-1.18633279 -0.59719277 -1.00590346 ... -1.62265966  1.93464909
-  -1.04599547]
- [ 0.14061169  1.2047846  -0.51749726 ...  0.02339532 -1.3998062
-   0.1253071 ]
+ [[ 0.05285903  1.46623559  0.0898308  ... -1.65193334  1.52624292
+   0.14485183]
+ [-0.51245491 -1.68014232  2.26832096 ...  0.56771893  0.53359244
+  -0.91188502]
+ [-1.01339753  1.69305099 -1.98712121 ... -0.16144894  0.55629086
+   0.02383416]
  ...
- [-0.48585652  1.12348348  1.51731383 ...  2.83050412 -2.45962484
-  -0.17473476]
- [-0.03199488 -0.0252168  -1.32403974 ... -1.50622511  1.54184627
-   0.90676437]
- [-0.1122885  -0.403972    0.23142779 ...  0.95284717  0.55085493
-  -1.1216948 ]]
+ [-1.4002414   1.44867366 -1.70103175 ... -2.05877423  0.81908793
+   0.50878765]
+ [ 1.84779557  0.34289658  1.64348294 ...  1.73006587 -0.17180168
+  -0.54769505]
+ [-0.74773207 -0.71186805 -0.62460292 ... -1.21232019  0.11560977
+   0.23790753]]
 Monotone:
  [[0 0 0 ... 0 0 0]
  [0 0 0 ... 0 0 0]
