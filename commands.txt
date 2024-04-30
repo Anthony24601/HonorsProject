@@ -1,3 +1,4 @@
 jupyter-book build --all honorsProjectAnthonyHsu/
 jb build honorsProjectAnthonyHsu/ --builder latex
 cd honorsProjectAnthonyHsu/_build/latex
+cd ../../..

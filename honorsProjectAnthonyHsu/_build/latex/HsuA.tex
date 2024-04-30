@@ -84,7 +84,7 @@
         
 
 \title{Exploring Gradient Descent On Image Reconstruction with EHT data}
-\date{Apr 25, 2024}
+\date{Apr 30, 2024}
 \release{}
 \author{Anthony Hsu}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -110,7 +110,7 @@ The Event Horizon Telescope (EHT) has revolutionized our understanding of black 
 This Juypter Book delves into the process of reconstructing images while showcasing images from EHT data. We investigate some key components within this process such as interpolation, calculating loss, and different gradient calculation methods.
 
 \sphinxAtStartPar
-Interpolation schemes play a pivotal role in connecting the dots between sparse observational data and reconstructing an image. It does so by estimating unknown data that fall in between existing, know data points. By studying how the real domain relates to the fourier domain, we can understand what factors can go into recreating a high\sphinxhyphen{}resolution image. Loss functions are a important part of the optimization process. This is because they quantify the difference between a reconstructed image and the real image. In order to do so we must understand how the data’s peculiarities affects the loss function and it’s regularization.
+Interpolation schemes play a pivotal role in connecting the dots between sparse observational data and reconstructing an image. It does so by estimating unknown data that fall in between existing, known data points. By studying how the real domain relates to the Fourier domain, we can understand what factors can go into recreating a high\sphinxhyphen{}resolution image. One approach to image reconstruction involves creating a loss function and minimizing it. The loss function quantifies how well the image matches the observational data and how same or expected the appearance of the image looks. The latter part of a loss function is called a regularizer. The optimum (the best performing image) is accepted as the image reconstruction of the data.
 
 \sphinxAtStartPar
 Finally, this notebook focuses on studying two distinct methods for computing gradients: finite differences and “dirtying the image.” By evaluating their efficiency and accuracy, we hope to provide insights into selecting suitable gradient calculation methods for image reconstruction tasks. Additionally we attempt to combine all of these topics and perform gradient descent on sample test images.
@@ -197,7 +197,7 @@ time is the time that it was taken. This time stamp is not used because we assum
 T1 and T2 are the two telescopes.
 
 \sphinxAtStartPar
-U and V are the fourier location of the fourier domain. When we plot each point in the fourier domain, we should obtain something like below \#HEREEE They are given in terms of lambda.
+U and V are the Fourier location of the Fourier domain. They are given in terms of wavelengths (lambda).
 
 \sphinxAtStartPar
 Iamp is the Amplitude of the Fourier Coefficient
@@ -206,7 +206,7 @@ Iamp is the Amplitude of the Fourier Coefficient
 IPhase is the Phase of the Fourier Coefficient in degrees
 
 \sphinxAtStartPar
-ISigma is the error or the noisiness of the data point
+ISigma is the estimated magnitude of the error or the noisiness of the data point
 
 \sphinxAtStartPar
 Here, we will start to preprocess the data. First we will create a class to hold the information is a more accessible manner
@@ -388,19 +388,16 @@ And here is what the data looks like in the Fourier Domain
 \PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{(}\PYG{p}{)}
 
 \PYG{n}{plt}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,}\PYG{n}{y}\PYG{p}{,}\PYG{n}{color}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{red}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}\PYG{n}{s}\PYG{o}{=}\PYG{l+m+mf}{0.1}\PYG{p}{)}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{u}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{v}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{u (\PYGZdl{}10\PYGZca{}9\PYGZdl{})}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{v (\PYGZdl{}10\PYGZca{}9\PYGZdl{})}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{gca}\PYG{p}{(}\PYG{p}{)}\PYG{o}{.}\PYG{n}{set\PYGZus{}aspect}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{equal}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \end{sphinxVerbatim}
 
 \end{sphinxuseclass}\end{sphinxVerbatimInput}
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-Text(0, 0.5, \PYGZsq{}v\PYGZsq{})
-\end{sphinxVerbatim}
-
-\noindent\sphinxincludegraphics{{6dc872c40ab0f1bab5cbed5f7f3f064f9ab59cb0415288454769f04fbb101816}.png}
+\noindent\sphinxincludegraphics{{d37b43258d0702c835a70634d4e791057dfdbff967c0620e7ee7a725fb5ee7a9}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -428,7 +425,7 @@ for gradient descent.
 \section{Background on FOV and k\sphinxhyphen{}space}
 \label{\detokenize{interpolation:background-on-fov-and-k-space}}
 \sphinxAtStartPar
-FOV stands for Field Of View and it refers to the distance over which an image is acquired or displayed. These images are usually captured by some sort of signal processing like telescopes and MRIs. The number of pixels determine the number of units in the Fourier domain that must be obtained in order to reconstruct an image.
+FOV stands for Field Of View and it refers to the angle over which an image is acquired or displayed. These images are usually captured by some sort of signal processing like telescopes and MRIs. The number of pixels determine the number of units in the Fourier domain that must be obtained in order to reconstruct an image.
 
 \sphinxAtStartPar
 For the sakes of this research and example, FOVx = FOVy = FOV and k is the wavenumber which represents the number of wave cycles per unit length. Lets find the value of k in terms of FOV.
@@ -448,16 +445,16 @@ Ideally, we would like w to be the period of the smallest harmonic. Thus we look
 \section{Interpolation}
 \label{\detokenize{interpolation:interpolation}}
 \sphinxAtStartPar
-In this notebook, we have an image that is being linearly transformed using Fourier transforms. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into Fourier space) and the data obtained by the telescopes (which are in the spectral or Fourier domain.)
+In this notebook, we have an image that is being linearly transformed using a Fourier transform. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into Fourier space) and the data obtained by the telescopes (which are in the spectral or Fourier domain.)
 
 \sphinxAtStartPar
-When doing this transformation, we obtain a grid of points extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Instead, we must interpolate or estimate the values of the data points using existing known points in our grid.
+When doing this transformation, we obtain a grid of points, due to the multiplicity of the torus, extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Therefore, we must interpolate or estimate the values of the data points using existing known points in our grid.
 
 \sphinxAtStartPar
 Furthermore, in order to translate correctly from image space to Fourier space, we need to multiply the grids (kx and ky) by k\_FOV. The calculation for this is explained above.
 
 \sphinxAtStartPar
-It is important to note that the more grid points we have, the bigger the image. Thus the size of our Fourier Domain is the Number of pixels of the image by k\_FOV. If our FOV is very small, then the width of the Fourier grid becomes large.
+It is important to note that the more grid points we have, the more pixels the image will have. Thus the size of our Fourier Domain is the Number of pixels of the image by k\_FOV. If our FOV is very small, then the width of the Fourier grid becomes large.
 
 \sphinxAtStartPar
 Next we want to interpolate the complex value at each coordinate. RegularGridInterpolator however cannot interpolate complex numbers so we interpolate the real and imaginary parts separately and then combined them for the final result.
@@ -591,7 +588,7 @@ Below is an interpolation subroutine written by Misha Stepanov.
 The code provides an insight into a local interpolation scheme using 2D cubic splines. It is local in a sense that only 12 grid points around the point at which we are interpolating is used to contribute the the estimation. The code the interpolation is done with data being wrapped into a 2D torus and the xy\sphinxhyphen{}coordinates are supplied assuming that the step of the grid in both the x and y directions are equal to 1.
 
 \sphinxAtStartPar
-We call a piec piecewise cubic function a cubic spline if it interpolates a set of data points while also guaranteeing the smoothness at the data points observed. Splining are often used instead of polynomial interpolations because it yields similar results and avoids the Runge’s phenomenon for higher degree polynomials.
+We call a piece piecewise cubic function a cubic spline if it interpolates a set of data points while also guaranteeing the smoothness at the data points observed. Splining is often used instead of Lagrange polynomial interpolations because it yields similar results and avoids the Runge’s phenomenon for higher degree polynomials.
 
 \begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
 
@@ -769,7 +766,7 @@ Here we test the calc\_regulaizer function using an empty image, a monotone imag
 (\PYGZhy{}0.5, 79.5, 79.5, \PYGZhy{}0.5)
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{acbb67e5f257ae676440a13493080ef1b017b58de97175bd7c4333ab7870f4d5}.png}
+\noindent\sphinxincludegraphics{{c4299394c3616431412d60d768cc26d07e575426682e335008a15910eb951fa2}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -812,7 +809,7 @@ Here we test the calc\_regulaizer function using an empty image, a monotone imag
 \begin{sphinxuseclass}{cell_output}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 Empty: \PYGZhy{}0.0
-Noisy: \PYGZhy{}2046.5990912994373
+Noisy: \PYGZhy{}2098.0148496908014
 Monotone: 0
 \end{sphinxVerbatim}
 
@@ -880,19 +877,19 @@ Empty:
  [0. 0. 0. ... 0. 0. 0.]
  [0. 0. 0. ... 0. 0. 0.]]
 Noisy:
- [[ 0.05285903  1.46623559  0.0898308  ... \PYGZhy{}1.65193334  1.52624292
-   0.14485183]
- [\PYGZhy{}0.51245491 \PYGZhy{}1.68014232  2.26832096 ...  0.56771893  0.53359244
-  \PYGZhy{}0.91188502]
- [\PYGZhy{}1.01339753  1.69305099 \PYGZhy{}1.98712121 ... \PYGZhy{}0.16144894  0.55629086
-   0.02383416]
+ [[\PYGZhy{}0.95413883  1.99708054  1.14738467 ...  0.90055883  0.89579664
+   0.46135121]
+ [ 1.34762705  0.20000497 \PYGZhy{}1.45485537 ... \PYGZhy{}1.5371224   0.91685192
+  \PYGZhy{}0.92691096]
+ [ 0.29932087 \PYGZhy{}1.98567555 \PYGZhy{}0.35564079 ... \PYGZhy{}1.80485066  2.18861028
+  \PYGZhy{}1.26278193]
  ...
- [\PYGZhy{}1.4002414   1.44867366 \PYGZhy{}1.70103175 ... \PYGZhy{}2.05877423  0.81908793
-   0.50878765]
- [ 1.84779557  0.34289658  1.64348294 ...  1.73006587 \PYGZhy{}0.17180168
-  \PYGZhy{}0.54769505]
- [\PYGZhy{}0.74773207 \PYGZhy{}0.71186805 \PYGZhy{}0.62460292 ... \PYGZhy{}1.21232019  0.11560977
-   0.23790753]]
+ [ 2.28755015 \PYGZhy{}2.61674611  0.3241252  ... \PYGZhy{}0.56989274 \PYGZhy{}0.99952826
+   1.26390626]
+ [\PYGZhy{}1.1946671   1.60243277  0.64163734 ...  1.13391232  0.06915924
+   0.34726264]
+ [ 1.07738544 \PYGZhy{}1.90558142  0.75357904 ...  0.50995512 \PYGZhy{}0.33023509
+  \PYGZhy{}0.76604557]]
 Monotone:
  [[0 0 0 ... 0 0 0]
  [0 0 0 ... 0 0 0]
@@ -933,7 +930,7 @@ Next we compare each interpolated point with its data term counterpart and get t
 \begin{split}J = \sum_{i}\frac{|\hat{I}(u_i,v_i) - D_i|^2}{\sigma_i^2}\end{split}
 \end{equation*}
 \sphinxAtStartPar
-\(\sigma\) here is the error for the \(i^{th}\) data point.
+\(\sigma_i, u_i, v_i, D_i\) are all related to the \(i^{th}\) data point.
 
 \sphinxAtStartPar
 Finally, we add the regularizer to the loss using the method in the previous notebook.
@@ -996,10 +993,13 @@ How would we change our loss function?
 \sphinxAtStartPar
 We add a new function called the Gain which represents the telescoping errors. It is a smooth function in time that has a phase and amplitude. We multiply it with the data term to result in:
 \begin{equation*}
-\begin{split}J = \sum_{i,j}(\frac{|\hat{I} - G D|^2}{\sigma^2})\end{split}
+\begin{split}J = \sum_{i}(\frac{|\hat{I}(u_i,v_i) - G_i D_i|^2}{\sigma_i^2})\end{split}
 \end{equation*}
 \sphinxAtStartPar
-Now when we try to minimize the image, we are also trying to minimize G.
+\(\sigma_i, u_i, v_i, D_i, G_i\) are all related to the \(i^{th}\) data point.
+
+\sphinxAtStartPar
+Now when we try to minimize the loss function, it will inherently minimize image and G because the loss function depends on both quantities.
 
 
 \subsection{Method Two: Closure Phase}
@@ -1091,31 +1091,31 @@ Here we generate a coords and data\_list list by sampling data from the ring (no
 
 \begin{sphinxuseclass}{cell_output}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-[[u: 1, v: \PYGZhy{}2],
- [u: \PYGZhy{}2, v: \PYGZhy{}3],
- [u: \PYGZhy{}3, v: 1],
- [u: 1, v: \PYGZhy{}1],
+[[u: \PYGZhy{}4, v: 1],
  [u: \PYGZhy{}3, v: \PYGZhy{}3],
- [u: 0, v: 2],
- [u: 1, v: 0],
- [u: 0, v: \PYGZhy{}1],
- [u: \PYGZhy{}1, v: 4],
- [u: \PYGZhy{}3, v: 4],
- [u: 0, v: 3],
- [u: \PYGZhy{}4, v: \PYGZhy{}4],
- [u: 3, v: \PYGZhy{}2],
- [u: 4, v: 0],
- [u: \PYGZhy{}2, v: \PYGZhy{}2],
+ [u: \PYGZhy{}4, v: 3],
+ [u: 0, v: 0],
+ [u: \PYGZhy{}1, v: 0],
  [u: 0, v: 4],
- [u: 2, v: 0],
- [u: 1, v: 2],
- [u: \PYGZhy{}3, v: 2],
- [u: 0, v: 1],
- [u: \PYGZhy{}1, v: 4],
+ [u: 1, v: \PYGZhy{}1],
+ [u: \PYGZhy{}1, v: \PYGZhy{}4],
+ [u: 4, v: \PYGZhy{}2],
+ [u: 4, v: \PYGZhy{}1],
+ [u: 1, v: \PYGZhy{}3],
+ [u: 2, v: \PYGZhy{}4],
+ [u: 0, v: \PYGZhy{}4],
+ [u: \PYGZhy{}2, v: 0],
+ [u: \PYGZhy{}3, v: 3],
+ [u: \PYGZhy{}4, v: 3],
+ [u: \PYGZhy{}1, v: 0],
+ [u: 2, v: \PYGZhy{}4],
  [u: 4, v: 4],
- [u: \PYGZhy{}3, v: 4],
- [u: 0, v: \PYGZhy{}3],
- [u: \PYGZhy{}1, v: 1]]
+ [u: \PYGZhy{}1, v: 0],
+ [u: 0, v: 2],
+ [u: 1, v: 4],
+ [u: \PYGZhy{}2, v: 1],
+ [u: \PYGZhy{}1, v: \PYGZhy{}2],
+ [u: \PYGZhy{}3, v: 4]]
 \end{sphinxVerbatim}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
@@ -1169,7 +1169,7 @@ Finally, below we calcuate the loss of the sample image we started with and then
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{3cc33dd7410534d6243ccff7940ebd0351419e8e6d27e6b4c401c8863e958df8}.png}
+\noindent\sphinxincludegraphics{{7b0a603e131c59649b534ad44bb4ff0c48d6f84b3d72c1c520d806fb31eea04a}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1189,7 +1189,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{16f51d8d648e974e8e616becb2500dd78bca13b5d0ff720a47edf2cd6f1ccd9b}.png}
+\noindent\sphinxincludegraphics{{720dfa01944ea2e0132d3d9803c5a5e1e33fe6ba56a6d04743ea66aadd6f291a}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1206,7 +1206,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{4ef219043b4bd6a2a897021859caafa7aca47a90a1e3d7ed7588d760b702532b}.png}
+\noindent\sphinxincludegraphics{{a299ce93255e213ba308a1ec2c792ba1db43c339bb2bc74c7bd64b713447f16e}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1223,7 +1223,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{56451bee7b312c3a62dd7a98862158448bda61dd89edf2d2a0ae416ce33ca995}.png}
+\noindent\sphinxincludegraphics{{0c3a86a0c107b36c57d0d6114c8c6acfc476b2e3a9b3c02cdcf2d16959a42f1a}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1253,13 +1253,13 @@ We have two different methods of computing gradients and in this notebook we wil
 \section{Gradient’s Background}
 \label{\detokenize{finite_gradient:gradient-s-background}}
 \sphinxAtStartPar
-A gradient is the direction of greatest change when looking at a scalar function. It is usually described as a generalized derivative or the rate of change. In our model, the gradient will be positive or negative depending on if a pixel’s value must in increased or decreased. Additionally, each pixel will have its own gradient.
+A gradient is vector where the direction is towards greatest rate of change when looking at a scalar function and the magnitude is the greatest rate of change. In our model, the gradient will be positive or negative depending on if a pixel’s value must in increased or decreased. The gradient is vector where each pixel has its own component in the gradient.
 
 \sphinxAtStartPar
 Here’s an intuitive way of looking at gradients: Image you are standing in Tucson at Alvernon and Grant and we are interested in the function f that tells you your elevation. The gradient of f will always tell you which direction you should travel in in order to rise in elevation the quickest.
 
 \sphinxAtStartPar
-Since gradients are consistent (meaning if initial conditions are constant and the function doesn’t change then we always get the same result), we can use gradients to find local maximums and minimums by simply following the gradient until either the gradient is 0 or we never finish (in the event of infinity end behaviors).
+We can use gradients to find local maximums and minimums by simply following the gradient until either the gradient is 0 or we never finish (in the event of infinity end behaviors).
 
 \sphinxAtStartPar
 Why are gradient’s important? In the real world, gradients are used in many fields like physics, robotics, and optimizations. We use it all the time in order to quanify the net rate of change in multi\sphinxhyphen{}variable functions!
@@ -1432,7 +1432,7 @@ Next we get the sample data points from our synthetic data. Afterwards we will r
 (\PYGZhy{}0.5, 79.5, 79.5, \PYGZhy{}0.5)
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{db8068e435acf0cf3b585895bfb27709117b21b6cb45eaa2ab388ca04b4c5b5d}.png}
+\noindent\sphinxincludegraphics{{efd2e4fe21bdca20a402f3d9036b077cc875c610b17c0589b1a5fb7b98f59f60}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1453,7 +1453,7 @@ Now that we have computed a gradient, we can now start doing gradient descent. G
 Heres how it works. We first calcualte the loss at the current position. The algorithm then iteratively calculates the next image by using the gradient at the current position. We scale the gradient so that we can obtain a loss less than the current loss and then subtract the scaled gradient from the image. This is called a single step. We subtract the gradient because we are looking to minimise the function rather than maximizing it.
 
 \sphinxAtStartPar
-We take a bunch of these steps until we hit some stopping condition (here it is np.min(np.abs(grad)) \(\leq\) 0.0000001).
+We take a bunch of these steps until we hit some stopping condition (here it is \sphinxcode{\sphinxupquote{np.min(np.abs(grad)) <= 0.0000001}}).
 
 \sphinxAtStartPar
 The choosing of step size (the scaling of the gradient) is important because if not chosen properly, it will lead to this pattern called zig\sphinxhyphen{}zagging. This would then cause the program to reach the minimum slower than it would have by going on a straight path.
@@ -1509,8 +1509,8 @@ The choosing of step size (the scaling of the gradient) is important because if 
     \PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{(}\PYG{p}{)}
     \PYG{n}{plt}\PYG{o}{.}\PYG{n}{plot}\PYG{p}{(}\PYG{n}{time\PYGZus{}step}\PYG{p}{,} \PYG{n}{losses\PYGZus{}arr}\PYG{p}{)}
     \PYG{n}{plt}\PYG{o}{.}\PYG{n}{title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ln(loss) vs time}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{loss}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{time t}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{loss}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{time t}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
     \PYG{n}{plt}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
     \PYG{k}{return} \PYG{n}{image\PYGZus{}copy}
@@ -1541,7 +1541,7 @@ You will notices that the loss decreases very rapidly towards zero
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{1903f73ade21d3703a3d6e56d2b4c11570cb3a9fc23ed28197805dc5ee5f6e55}.png}
+\noindent\sphinxincludegraphics{{db682d507d2c435a24739a38c8201222bd18a13cf4b61cd76855fe99286718b3}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1564,7 +1564,7 @@ You will notices that the loss decreases very rapidly towards zero
 Text(0.5, 1.0, \PYGZsq{}Reconstructed Image\PYGZsq{})
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{eb4c241b7369fc365794817315e1f01ddb414c676a874941007bc6778019a26f}.png}
+\noindent\sphinxincludegraphics{{35c4b4059baf3d10d2550d4910c0d50b9eed503d706744ce179ff826953aeb3d}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1682,14 +1682,20 @@ x = gradient\PYGZus{}finite\PYGZus{}differences(data\PYGZus{}list, coords, emp)
 Here, we use a different method of computing gradients in order to speed up the gradient calculation process. By doing so, we should also see an increase in speed for the gradient descent.
 
 \sphinxAtStartPar
-First we start with the Gradient calculation. Consider the following loss term \$\(L_{data}(I) = \sum_a\frac{|I(u_a,v_a)-O_a|^2}{\sigma_a^2}\)\$
-
+First we start with the Gradient calculation. Consider the following loss term
+\begin{equation*}
+\begin{split}L_{data}(I) = \sum_a\frac{|I(u_a,v_a)-O_a|^2}{\sigma_a^2}\end{split}
+\end{equation*}
 \sphinxAtStartPar
-Here a represents which data point, O\_a represents the data point itself, i and j are pixel coordinates, \(I_{ij}\) is the image. By doing this, we get the gradient to be: \$\(G_{ij} = \frac{\partial L_{data}}{\partial I_{ij}} = \sum_a \frac{1}{\sigma_a^2}(\frac{\partial I(u_a,v_a)}{\partial I_{ij}}(I^*(u_a,v_a)-O_a^*) + (I(u_a,v_a)-O_a)\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}})\)\$
-
+Here a represents which data point, O\_a represents the data point itself, i and j are pixel coordinates, \(I_{ij}\) is the image. By doing this, we get the gradient to be:
+\begin{equation*}
+\begin{split}G_{ij} = \frac{\partial L_{data}}{\partial I_{ij}} = \sum_a \frac{1}{\sigma_a^2}(\frac{\partial I(u_a,v_a)}{\partial I_{ij}}(I^*(u_a,v_a)-O_a^*) + (I(u_a,v_a)-O_a)\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}})\end{split}
+\end{equation*}
 \sphinxAtStartPar
-Ideally we can compute the partial derivates as \$\(\frac{\partial I(u_a,v_a)}{\partial I_{ij}} = exp(\frac{2\pi i}{N}(iu_a+jv_a)), \frac{\partial I^*(u_a,v_a)}{\partial I_{ij}} = exp(-\frac{2\pi i}{N}(iu_a+jv_a))\)\$
-
+Ideally we can compute the partial derivates as
+\begin{equation*}
+\begin{split}\frac{\partial I(u_a,v_a)}{\partial I_{ij}} = exp(\frac{2\pi i}{N}(iu_a+jv_a)), \frac{\partial I^*(u_a,v_a)}{\partial I_{ij}} = exp(-\frac{2\pi i}{N}(iu_a+jv_a))\end{split}
+\end{equation*}
 \sphinxAtStartPar
 N is the size of the image in pixels
 
@@ -1697,17 +1703,23 @@ N is the size of the image in pixels
 We can further define things like so:
 
 \sphinxAtStartPar
-We introduce the so\sphinxhyphen{}called “dirty” image from observations as \$\(DO_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}O_a\)\$
-
+We introduce the so\sphinxhyphen{}called “dirty” image from observations as
+\begin{equation*}
+\begin{split}DO_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}O_a\end{split}
+\end{equation*}
 \sphinxAtStartPar
 Here \(I^*(u_a,v_a)\) is the fourier domain of the image at an observed data point.
 
 \sphinxAtStartPar
-We also define the “dirtying” of the image I as \$\(DI_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}I(u_a,v_a)\)\$
-
+We also define the “dirtying” of the image I as
+\begin{equation*}
+\begin{split}DI_{ij} = \sum_a \frac{1}{\sigma^2_a}\frac{\partial I^*(u_a,v_a)}{\partial I_{ij}}I(u_a,v_a)\end{split}
+\end{equation*}
 \sphinxAtStartPar
-This then gives us that \$\(G_{ij} = 2Re(DI_{ij}-DO_{ij})\)\$
-
+This then gives us that
+\begin{equation*}
+\begin{split}G_{ij} = 2Re(DI_{ij}-DO_{ij})\end{split}
+\end{equation*}
 \begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
 
 \begin{sphinxuseclass}{cell_input}
@@ -1885,16 +1897,6 @@ Below is the gradient descent routine done in the fine gradient code
 
 \begin{sphinxuseclass}{cell_input}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{c+c1}{\PYGZsh{} x = gradient\PYGZus{}descent(emp,data\PYGZus{}list,coords,coeffs)}
-\end{sphinxVerbatim}
-
-\end{sphinxuseclass}\end{sphinxVerbatimInput}
-
-\end{sphinxuseclass}
-\begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
-
-\begin{sphinxuseclass}{cell_input}
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{(}\PYG{p}{)}
 \PYG{n}{plt}\PYG{o}{.}\PYG{n}{imshow}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)}
 \PYG{n}{plt}\PYG{o}{.}\PYG{n}{axis}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{off}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
@@ -1918,9 +1920,11 @@ Below is the gradient descent routine done in the fine gradient code
 \label{\detokenize{dirty_gradient:continuing-further}}
 \sphinxAtStartPar
 Now lets say that DFT (Discrete fourier transform) is defined as
-\$\(I(u,v) = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(-\frac{2\pi i}{N}(iu+jv))I_{ij}\)\(
-\)\(I_{ij} = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(\frac{2\pi i}{N}(iu+jv))I(u,v)\)\$
-
+\begin{equation*}
+\begin{split}I(u,v) = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(-\frac{2\pi i}{N}(iu+jv))I_{ij}\end{split}
+\end{equation*}\begin{equation*}
+\begin{split}I_{ij} = \frac{1}{N}\sum^{N-1}_{i,j = 0} exp(\frac{2\pi i}{N}(iu+jv))I(u,v)\end{split}
+\end{equation*}
 \sphinxAtStartPar
 The interpolation scheme computes \(I(u_a,v_a)\) as \(I(u_a,v_a) = \sum_{u,v = 0}^{N-1} W(u_a,v_a|u,v)I(u,v)\) where \(W(u_a,v_a|u,v)\) stands for the weights of \(u_a,v_a\) at u and v. The interpolation scheme will compute with only a few weights being non\sphinxhyphen{}zero for each a (assuming the interpolation is done in a local way). Putting this expression into \(I(u,v)\) we get
 \begin{equation*}
@@ -1944,11 +1948,14 @@ Now, we can rewrite our formula for the Dirty Image.
 \end{equation*}
 \sphinxAtStartPar
 Now lets finally introduce the “dirty kernel” DK.
-\$\(DK(u,v|u',v') = \sum_a \frac{1}{\sigma^2_a}W(u_a,v_a|u,v)W(u_a,v_a|u',v')\)\$
-
+\begin{equation*}
+\begin{split}DK(u,v|u',v') = \sum_a \frac{1}{\sigma^2_a}W(u_a,v_a|u,v)W(u_a,v_a|u',v')\end{split}
+\end{equation*}
 \sphinxAtStartPar
-This transforms the dirty image equation to be \$\(DI(u,v) = \sum^{N-1}_{u',v' = 0} DK(u,v|u',v') I(u',v')\)\$
-
+This transforms the dirty image equation to be
+\begin{equation*}
+\begin{split}DI(u,v) = \sum^{N-1}_{u',v' = 0} DK(u,v|u',v') I(u',v')\end{split}
+\end{equation*}
 \sphinxAtStartPar
 Notice here that for each \((u,v)\) there are only a few points \((u',v')\) close by where \(DK(u,v|u',v') \neq 0\). Thus for each point \((u,v)\) in the Fourier domain, we can create a small list of \((u',v')\) points with tabulated \(DK\) values.
 

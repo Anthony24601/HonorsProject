@@ -12,7 +12,7 @@
 \contentsline {section}{\numberline {3.2}Furthermore into the data}{20}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Method One: Gain}{20}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}Method Two: Closure Phase}{20}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Testing the function}{20}{section.3.3}%
+\contentsline {section}{\numberline {3.3}Testing the function}{21}{section.3.3}%
 \contentsline {chapter}{\numberline {4}Gradient Calculations: Finite Differences}{27}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Gradient’s Background}{27}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Method one: Finite Differences Methods}{27}{section.4.2}%
