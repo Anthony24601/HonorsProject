@@ -84,7 +84,7 @@
         
 
 \title{Exploring Gradient Descent On Image Reconstruction with EHT data}
-\date{Apr 30, 2024}
+\date{May 01, 2024}
 \release{}
 \author{Anthony Hsu}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -106,14 +106,13 @@
 
 \sphinxAtStartPar
 Abstract:
-The Event Horizon Telescope (EHT) has revolutionized our understanding of black holes by using technology like Very Long Baseline Interfermetry (VLBI) and General Relativistic Magnetohydrodynamics (GRMHD) simulations to create high\sphinxhyphen{}resolution images.
-This Juypter Book delves into the process of reconstructing images while showcasing images from EHT data. We investigate some key components within this process such as interpolation, calculating loss, and different gradient calculation methods.
+The Event Horizon Telescope (EHT) has revolutionized our understanding of black holes by using Very Long Baseline Interferometry (VLBI) to reconstruct the highest resolution images of black holes. It combines data from a global network of radio telescopes to observe the immediate surroundings of black holes, particularly focusing on the supermassive black hole in the galaxy M87 and the center of our Milky Way. This Jupyter Book explores the intricate process of image reconstruction from EHT data, highlighting several critical aspects such as interpolation, loss calculation, and gradient computation methods.
 
 \sphinxAtStartPar
-Interpolation schemes play a pivotal role in connecting the dots between sparse observational data and reconstructing an image. It does so by estimating unknown data that fall in between existing, known data points. By studying how the real domain relates to the Fourier domain, we can understand what factors can go into recreating a high\sphinxhyphen{}resolution image. One approach to image reconstruction involves creating a loss function and minimizing it. The loss function quantifies how well the image matches the observational data and how same or expected the appearance of the image looks. The latter part of a loss function is called a regularizer. The optimum (the best performing image) is accepted as the image reconstruction of the data.
+Interpolation schemes play a pivotal role in connecting the snap averaged data in EHT’s sparse observation and reconstructing an image. By examining the relationship between the image and Fourier domains, we gain insights into the factors influencing high\sphinxhyphen{}resolution image recreation. One approach to image reconstruction involves creating a loss function and minimizing it. The loss function quantifies how well the image matches the observational data and how same or expected the appearance of the image looks. The latter part of a loss function is called a regularizer. The optimum (the best performing image) is accepted as the image reconstruction of the data.
 
 \sphinxAtStartPar
-Finally, this notebook focuses on studying two distinct methods for computing gradients: finite differences and “dirtying the image.” By evaluating their efficiency and accuracy, we hope to provide insights into selecting suitable gradient calculation methods for image reconstruction tasks. Additionally we attempt to combine all of these topics and perform gradient descent on sample test images.
+Additionally, this notebook assesses two distinct methods for computing gradients: finite differences and an “dirtying the image” approach. By comparing their efficiency and accuracy, we aim to offer guidance on selecting appropriate gradient computation methods for image reconstruction tasks. Integrating these components, we perform gradient descent on sample test images to demonstrate practical applications of these theories.
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
@@ -178,14 +177,7 @@ In order to capture the image and data of a black hole, we would need a telescop
 Most of the optics like cameras and cellphones, they don’t hit a limit called the Defraction Limit. This limit is the point at which two Airy patterns are no longer distinguishable from each other and is often known as the cutoff frequence of a lens. Since EHT wants to image things that are extremely far away, they are constantly working at the Defraction limit and are limited by the physics of light.
 
 \sphinxAtStartPar
-Because of these limitations, EHT is only able to collect sparse data in the Fourier domain (rather than an actually picture image). Thus in order to obtain a picture, we must do a image reconstruction as an optimization problem in order to fill in the gaps. The data set from EHT (The Event Horizon Telescope) and from the HOPS pipeline (software from MIT), comes in multiple sets. From one data collection, we are given a hi band and low band sets, and here’s why.
-
-\sphinxAtStartPar
-Suppose that the sky signal is some radio wave \(Sky = \epsilon \sin(\omega t)\). The signal however is extremely small which make it hard to detect. In order to pick out this signal on earth, we use a local oscillator which generates another wave (i.e. \(LO = A \sin(\omega't)\)) where A is some amplitude. Once these two signals are multiplied together, we get something like so: \(Sky \times LO = A \epsilon \sin(\omega t) \times \sin(\omega' t) = A \epsilon {\sin[(\omega + \omega')t] + sin [(\omega - \omega')t]}\).
-
-\sphinxAtStartPar
-Here we have \(A \epsilon\) be an amplitude such that the signals are big enough for our instruments to detect.
-The \(\omega + \omega'\) and \(\omega - \omega'\) results in two bands which the data is taken from. Theoretically the two bands should create the same image but that is not always the case.
+Because of these limitations, EHT is only able to collect sparse data in the Fourier domain (rather than an actually picture image). Thus in order to obtain a picture, we must do a image reconstruction as an optimization problem in order to fill in the gaps. The data set comes from EHT (The Event Horizon Telescope) and from the HOPS pipeline (software from MIT).
 
 
 \section{Some Details about the Table}
@@ -404,6 +396,13 @@ And here is what the data looks like in the Fourier Domain
 \end{sphinxuseclass}
 \sphinxstepscope
 
+
+\chapter{Interpolation and Regularizers}
+\label{\detokenize{interpolation:interpolation-and-regularizers}}\label{\detokenize{interpolation::doc}}
+\sphinxAtStartPar
+In this notebook, we will talk about interpolating coordinate values from an image as well as calculating the regularizer
+for gradient descent.
+
 \begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
 
 \begin{sphinxuseclass}{cell_input}
@@ -415,13 +414,6 @@ And here is what the data looks like in the Fourier Domain
 
 \end{sphinxuseclass}
 
-\chapter{Interpolation and Regularizers}
-\label{\detokenize{interpolation:interpolation-and-regularizers}}\label{\detokenize{interpolation::doc}}
-\sphinxAtStartPar
-In this notebook, we will talk about interpolating coordinate values from an image as well as calculating the regularizer
-for gradient descent.
-
-
 \section{Background on FOV and k\sphinxhyphen{}space}
 \label{\detokenize{interpolation:background-on-fov-and-k-space}}
 \sphinxAtStartPar
@@ -431,15 +423,15 @@ FOV stands for Field Of View and it refers to the angle over which an image is a
 For the sakes of this research and example, FOVx = FOVy = FOV and k is the wavenumber which represents the number of wave cycles per unit length. Lets find the value of k in terms of FOV.
 
 \sphinxAtStartPar
-In these notebooks we are using discrete Fourier Transform in order to convert from real space to the Fourier domain. We are thinking of the FOV by FOV as a 2\sphinxhyphen{}dimensional torus where everything is periodic on it. The Fourier Transform then performs a constant function on the torus, the lowest harmonic would be related to sin or cos with the lowest possible frequency so that it is still periodically on the torus. When chooseing a k, if k is too small, then there will be less than one wavelength along the torus.
+In these notebooks we are using discrete Fourier Transform in order to convert from real space to the Fourier domain. We are thinking of the FOV by FOV as a 2\sphinxhyphen{}dimensional torus where everything is periodic on it. The Fourier Transform then performs a function on the torus, the lowest harmonic would be related to sin or cos with the lowest possible frequency so that it is still periodically on the torus. When chooseing a k, if k is too small, then there will be less than one wavelength along the torus.
 
 \sphinxAtStartPar
 Here we will define the Fourier transform to be
 \begin{equation*}
-\begin{split}\int_0^wf(x)e^{2\pi i \Delta k x}\end{split}
+\begin{split}\hat{f}(n,m) = \int_0^{FOV} \int_0^{FOV} f(x,y)e^{2\pi i \Delta k n x + 2\pi i \Delta k m y} dx dy\end{split}
 \end{equation*}
 \sphinxAtStartPar
-Ideally, we would like w to be the period of the smallest harmonic. Thus we look at \(\sin 2\pi \Delta k x\) harmonics. As x goes from 0 to FOV, we want to end back at where we started. This means that we want \( 2\pi \Delta k FOV = 2\pi\). Thus \(\Delta k = \frac{1}{FOV}\).
+Ideally, we would like w to be the period of the smallest harmonic in one direction. Thus we look at \(\sin 2\pi \Delta k x\) harmonics. Considering the slowest harmonics, then we let n = 1. As x goes from 0 to FOV, we want to end back at where we started. This means that we want \(2\pi \Delta k FOV = 2\pi\). Thus \(\Delta k = \frac{1}{FOV}\).
 
 
 \section{Interpolation}
@@ -448,7 +440,7 @@ Ideally, we would like w to be the period of the smallest harmonic. Thus we look
 In this notebook, we have an image that is being linearly transformed using a Fourier transform. We do this in order to allow us to use direct comparisons between our image (in real space but being transformed into Fourier space) and the data obtained by the telescopes (which are in the spectral or Fourier domain.)
 
 \sphinxAtStartPar
-When doing this transformation, we obtain a grid of points, due to the multiplicity of the torus, extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Therefore, we must interpolate or estimate the values of the data points using existing known points in our grid.
+When doing this transformation, we obtain a grid of points, due to the periodicity of the torus, extracted from the image which do not necessarily line up with the U and V coordinates from the dataset. Therefore, we must interpolate or estimate the values of the data points using existing known points in our grid.
 
 \sphinxAtStartPar
 Furthermore, in order to translate correctly from image space to Fourier space, we need to multiply the grids (kx and ky) by k\_FOV. The calculation for this is explained above.
@@ -766,7 +758,7 @@ Here we test the calc\_regulaizer function using an empty image, a monotone imag
 (\PYGZhy{}0.5, 79.5, 79.5, \PYGZhy{}0.5)
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{c4299394c3616431412d60d768cc26d07e575426682e335008a15910eb951fa2}.png}
+\noindent\sphinxincludegraphics{{d7e93ef4f24038693672f381aeead34e7b1d99d3019776838aee5c0fd3c055b0}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -809,7 +801,7 @@ Here we test the calc\_regulaizer function using an empty image, a monotone imag
 \begin{sphinxuseclass}{cell_output}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 Empty: \PYGZhy{}0.0
-Noisy: \PYGZhy{}2098.0148496908014
+Noisy: \PYGZhy{}2175.392787838805
 Monotone: 0
 \end{sphinxVerbatim}
 
@@ -877,19 +869,19 @@ Empty:
  [0. 0. 0. ... 0. 0. 0.]
  [0. 0. 0. ... 0. 0. 0.]]
 Noisy:
- [[\PYGZhy{}0.95413883  1.99708054  1.14738467 ...  0.90055883  0.89579664
-   0.46135121]
- [ 1.34762705  0.20000497 \PYGZhy{}1.45485537 ... \PYGZhy{}1.5371224   0.91685192
-  \PYGZhy{}0.92691096]
- [ 0.29932087 \PYGZhy{}1.98567555 \PYGZhy{}0.35564079 ... \PYGZhy{}1.80485066  2.18861028
-  \PYGZhy{}1.26278193]
+ [[ 0.27110122 \PYGZhy{}0.26792028  0.24373484 ... \PYGZhy{}1.78212619 \PYGZhy{}0.25798071
+  \PYGZhy{}1.75820855]
+ [\PYGZhy{}0.05188315  0.74498931 \PYGZhy{}1.19863679 ...  2.11052592 \PYGZhy{}0.3928655
+   1.5844631 ]
+ [\PYGZhy{}0.83281295  1.32525577 \PYGZhy{}0.34310046 ...  1.91057963 \PYGZhy{}0.75566079
+  \PYGZhy{}1.09022339]
  ...
- [ 2.28755015 \PYGZhy{}2.61674611  0.3241252  ... \PYGZhy{}0.56989274 \PYGZhy{}0.99952826
-   1.26390626]
- [\PYGZhy{}1.1946671   1.60243277  0.64163734 ...  1.13391232  0.06915924
-   0.34726264]
- [ 1.07738544 \PYGZhy{}1.90558142  0.75357904 ...  0.50995512 \PYGZhy{}0.33023509
-  \PYGZhy{}0.76604557]]
+ [\PYGZhy{}1.7355526   1.9401696  \PYGZhy{}1.88848139 ... \PYGZhy{}0.33351843 \PYGZhy{}0.75294465
+  \PYGZhy{}0.99623846]
+ [ 1.09733057 \PYGZhy{}0.95732659 \PYGZhy{}0.28356497 ... \PYGZhy{}1.43437622  2.56158941
+  \PYGZhy{}1.81351   ]
+ [ 0.35675887 \PYGZhy{}0.62055941  0.58023011 ...  1.47917241 \PYGZhy{}1.91481278
+   1.58313622]]
 Monotone:
  [[0 0 0 ... 0 0 0]
  [0 0 0 ... 0 0 0]
@@ -905,16 +897,6 @@ Monotone:
 \end{sphinxuseclass}
 \sphinxstepscope
 
-\begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
-
-\begin{sphinxuseclass}{cell_input}
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{o}{\PYGZpc{}}\PYG{k}{run} ./utility.ipynb
-\end{sphinxVerbatim}
-
-\end{sphinxuseclass}\end{sphinxVerbatimInput}
-
-\end{sphinxuseclass}
 
 \chapter{Loss}
 \label{\detokenize{loss:loss}}\label{\detokenize{loss::doc}}
@@ -935,6 +917,16 @@ Next we compare each interpolated point with its data term counterpart and get t
 \sphinxAtStartPar
 Finally, we add the regularizer to the loss using the method in the previous notebook.
 
+\begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
+
+\begin{sphinxuseclass}{cell_input}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZpc{}}\PYG{k}{run} ./utility.ipynb
+\end{sphinxVerbatim}
+
+\end{sphinxuseclass}\end{sphinxVerbatimInput}
+
+\end{sphinxuseclass}
 
 \section{Data Term calculation}
 \label{\detokenize{loss:data-term-calculation}}
@@ -993,13 +985,13 @@ How would we change our loss function?
 \sphinxAtStartPar
 We add a new function called the Gain which represents the telescoping errors. It is a smooth function in time that has a phase and amplitude. We multiply it with the data term to result in:
 \begin{equation*}
-\begin{split}J = \sum_{i}(\frac{|\hat{I}(u_i,v_i) - G_i D_i|^2}{\sigma_i^2})\end{split}
+\begin{split}J = \sum_{i}\frac{|\hat{I}(u_i,v_i) - G_i D_i|^2}{\sigma_i^2}\end{split}
 \end{equation*}
 \sphinxAtStartPar
 \(\sigma_i, u_i, v_i, D_i, G_i\) are all related to the \(i^{th}\) data point.
 
 \sphinxAtStartPar
-Now when we try to minimize the loss function, it will inherently minimize image and G because the loss function depends on both quantities.
+This loss function becomes the one we are trying to minimize.
 
 
 \subsection{Method Two: Closure Phase}
@@ -1091,31 +1083,31 @@ Here we generate a coords and data\_list list by sampling data from the ring (no
 
 \begin{sphinxuseclass}{cell_output}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-[[u: \PYGZhy{}4, v: 1],
- [u: \PYGZhy{}3, v: \PYGZhy{}3],
- [u: \PYGZhy{}4, v: 3],
- [u: 0, v: 0],
- [u: \PYGZhy{}1, v: 0],
- [u: 0, v: 4],
- [u: 1, v: \PYGZhy{}1],
- [u: \PYGZhy{}1, v: \PYGZhy{}4],
+[[u: \PYGZhy{}2, v: \PYGZhy{}3],
+ [u: 1, v: 0],
  [u: 4, v: \PYGZhy{}2],
- [u: 4, v: \PYGZhy{}1],
+ [u: 4, v: \PYGZhy{}2],
+ [u: \PYGZhy{}4, v: 2],
+ [u: 4, v: 3],
+ [u: 0, v: 1],
+ [u: 4, v: \PYGZhy{}3],
+ [u: 4, v: 0],
+ [u: \PYGZhy{}4, v: 4],
  [u: 1, v: \PYGZhy{}3],
+ [u: \PYGZhy{}3, v: \PYGZhy{}2],
+ [u: 3, v: \PYGZhy{}4],
+ [u: 1, v: \PYGZhy{}3],
+ [u: \PYGZhy{}4, v: \PYGZhy{}1],
+ [u: 1, v: \PYGZhy{}2],
+ [u: 2, v: 0],
+ [u: 4, v: 0],
+ [u: 2, v: \PYGZhy{}1],
+ [u: \PYGZhy{}3, v: \PYGZhy{}2],
+ [u: 2, v: 1],
  [u: 2, v: \PYGZhy{}4],
- [u: 0, v: \PYGZhy{}4],
- [u: \PYGZhy{}2, v: 0],
- [u: \PYGZhy{}3, v: 3],
- [u: \PYGZhy{}4, v: 3],
- [u: \PYGZhy{}1, v: 0],
- [u: 2, v: \PYGZhy{}4],
- [u: 4, v: 4],
- [u: \PYGZhy{}1, v: 0],
- [u: 0, v: 2],
- [u: 1, v: 4],
+ [u: 3, v: 1],
  [u: \PYGZhy{}2, v: 1],
- [u: \PYGZhy{}1, v: \PYGZhy{}2],
- [u: \PYGZhy{}3, v: 4]]
+ [u: 4, v: 4]]
 \end{sphinxVerbatim}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
@@ -1169,7 +1161,7 @@ Finally, below we calcuate the loss of the sample image we started with and then
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{7b0a603e131c59649b534ad44bb4ff0c48d6f84b3d72c1c520d806fb31eea04a}.png}
+\noindent\sphinxincludegraphics{{4a77565af8594be5c959a8880403a4ec5ed7ef30e4bd75806bff086619b2d4cf}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1189,7 +1181,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{720dfa01944ea2e0132d3d9803c5a5e1e33fe6ba56a6d04743ea66aadd6f291a}.png}
+\noindent\sphinxincludegraphics{{d4430ec1007d8d8da4dae2be5e320b38fb394ee3760503945796d30bdaebd123}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1206,7 +1198,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{a299ce93255e213ba308a1ec2c792ba1db43c339bb2bc74c7bd64b713447f16e}.png}
+\noindent\sphinxincludegraphics{{e28173b92553f34ae26fc0ba521a496da45448c94d6e5b84dc7582164c48cf85}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1223,7 +1215,7 @@ The dark spots in this picture are low points while the yellow spots are high po
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{0c3a86a0c107b36c57d0d6114c8c6acfc476b2e3a9b3c02cdcf2d16959a42f1a}.png}
+\noindent\sphinxincludegraphics{{3892057d86f1d8515e690c03cb5af3191db489d2034b3304cbec845e9338be70}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1232,6 +1224,12 @@ The dark spots in this picture are low points while the yellow spots are high po
 In all four of these trials (and other reruns that we test), we generally see dark spots in the centers suggesting that the best area to put the ring is centered in the middle of the image
 
 \sphinxstepscope
+
+
+\chapter{Gradient Calculations: Finite Differences}
+\label{\detokenize{finite_gradient:gradient-calculations-finite-differences}}\label{\detokenize{finite_gradient::doc}}
+\sphinxAtStartPar
+We have two different methods of computing gradients and in this notebook we will explore the first one.
 
 \begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
 
@@ -1244,12 +1242,6 @@ In all four of these trials (and other reruns that we test), we generally see da
 
 \end{sphinxuseclass}
 
-\chapter{Gradient Calculations: Finite Differences}
-\label{\detokenize{finite_gradient:gradient-calculations-finite-differences}}\label{\detokenize{finite_gradient::doc}}
-\sphinxAtStartPar
-We have two different methods of computing gradients and in this notebook we will explore the first one.
-
-
 \section{Gradient’s Background}
 \label{\detokenize{finite_gradient:gradient-s-background}}
 \sphinxAtStartPar
@@ -1259,7 +1251,7 @@ A gradient is vector where the direction is towards greatest rate of change when
 Here’s an intuitive way of looking at gradients: Image you are standing in Tucson at Alvernon and Grant and we are interested in the function f that tells you your elevation. The gradient of f will always tell you which direction you should travel in in order to rise in elevation the quickest.
 
 \sphinxAtStartPar
-We can use gradients to find local maximums and minimums by simply following the gradient until either the gradient is 0 or we never finish (in the event of infinity end behaviors).
+If the function is smooth then we can use gradients to find local maximums and minimums by simply following the gradient until either the gradient is 0 or we never finish (in the event of infinity end behaviors).
 
 \sphinxAtStartPar
 Why are gradient’s important? In the real world, gradients are used in many fields like physics, robotics, and optimizations. We use it all the time in order to quanify the net rate of change in multi\sphinxhyphen{}variable functions!
@@ -1432,7 +1424,7 @@ Next we get the sample data points from our synthetic data. Afterwards we will r
 (\PYGZhy{}0.5, 79.5, 79.5, \PYGZhy{}0.5)
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{efd2e4fe21bdca20a402f3d9036b077cc875c610b17c0589b1a5fb7b98f59f60}.png}
+\noindent\sphinxincludegraphics{{a83f03102c1b5343ddd01aa216c66aca1784f49105447f12fe1b1476c3a5b0f2}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1541,7 +1533,12 @@ You will notices that the loss decreases very rapidly towards zero
 \begin{sphinxVerbatimOutput}
 
 \begin{sphinxuseclass}{cell_output}
-\noindent\sphinxincludegraphics{{db682d507d2c435a24739a38c8201222bd18a13cf4b61cd76855fe99286718b3}.png}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+/var/folders/\PYGZus{}b/trlmhkgj5xq968yccj4vtg1c0000gn/T/ipykernel\PYGZus{}83776/4118681095.py:42: RuntimeWarning: invalid value encountered in log
+  losses\PYGZus{}arr.append(np.log(new\PYGZus{}loss))
+\end{sphinxVerbatim}
+
+\noindent\sphinxincludegraphics{{0b10be195aea8b1ce332477ef50134d88ccaf47da2a5ccf117ac2decd505be7d}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1564,7 +1561,7 @@ You will notices that the loss decreases very rapidly towards zero
 Text(0.5, 1.0, \PYGZsq{}Reconstructed Image\PYGZsq{})
 \end{sphinxVerbatim}
 
-\noindent\sphinxincludegraphics{{35c4b4059baf3d10d2550d4910c0d50b9eed503d706744ce179ff826953aeb3d}.png}
+\noindent\sphinxincludegraphics{{0ff37068d6288c6b14ce01930f030006eabe8f5abc548639cadfd298d7266fed}.png}
 
 \end{sphinxuseclass}\end{sphinxVerbatimOutput}
 
@@ -1662,6 +1659,9 @@ x = gradient\PYGZus{}finite\PYGZus{}differences(data\PYGZus{}list, coords, emp)
 \end{sphinxuseclass}
 \sphinxstepscope
 
+
+\chapter{Gradient Calculations: “Dirtying” the Image}
+\label{\detokenize{dirty_gradient:gradient-calculations-dirtying-the-image}}\label{\detokenize{dirty_gradient::doc}}
 \begin{sphinxuseclass}{cell}\begin{sphinxVerbatimInput}
 
 \begin{sphinxuseclass}{cell_input}
@@ -1672,9 +1672,6 @@ x = gradient\PYGZus{}finite\PYGZus{}differences(data\PYGZus{}list, coords, emp)
 \end{sphinxuseclass}\end{sphinxVerbatimInput}
 
 \end{sphinxuseclass}
-
-\chapter{Gradient Calculations: “Dirtying” the Image}
-\label{\detokenize{dirty_gradient:gradient-calculations-dirtying-the-image}}\label{\detokenize{dirty_gradient::doc}}
 
 \section{Method two: Dirtying the Image}
 \label{\detokenize{dirty_gradient:method-two-dirtying-the-image}}
